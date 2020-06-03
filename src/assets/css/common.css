@@ -1,0 +1,42 @@
+@font-face {
+  font-family: "Baloo 2";
+  src: url("./../fonts/Baloo2-Regular.ttf");
+}
+
+body {
+  font-family: 'Baloo 2', cursive;
+  -webkit-font-smoothing: antialiased;
+  background: #e4e4e4;
+}
+
+.btn-pr {
+  background: #b7a900;
+  border-color: #b7a900;
+  color: white;
+}
+
+.btn-sec {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.btn-pr:hover {
+  color: white;
+  background: #decd00;
+  border-color: #decd00;
+}
+.btn-sec:hover {
+  color: white;
+  background: #4f5458;
+  border-color: #4f5458;
+}
+.btn:focus {
+  box-shadow: none;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #004085;
+}
+
