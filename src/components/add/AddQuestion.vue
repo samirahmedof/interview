@@ -39,6 +39,7 @@ export default {
       this.questionLevel = null;
       this.questionText = null;
       this.defaultSelectText = "Seç";
+      this.$http.post("'https://interview-8a85e.firebaseio.com/questions.json'",{})
     },
     changeSelect({ data, text }) {
       this.questionLevel = data[0].value;
