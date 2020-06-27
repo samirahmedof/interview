@@ -10,7 +10,7 @@
   </footer>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 footer {
   background: #004085;
   position: fixed;

@@ -13,7 +13,7 @@
 </template>
 <style lang="scss" scoped>
 main {
-  margin-top: 20px;
+  margin: 80px 0;
   .mainView {
     background: white;
     padding: 20px 35px;

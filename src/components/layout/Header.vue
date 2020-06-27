@@ -28,9 +28,14 @@
   </header>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 header {
   background: #004085;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: 100%;
   h1 {
     margin: 0;
     color: #fff;
@@ -53,6 +58,7 @@ header {
           padding: 15px;
           text-decoration: none;
           transition: all 0.3s;
+          text-align: center;
           &:hover {
             background: #b7a900;
           }

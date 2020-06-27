@@ -35,11 +35,25 @@ export default {
   },
   methods: {
     addToDb() {
-    //   console.log(this.questionLevel, this.questionText);
-      this.questionLevel = null;
-      this.questionText = null;
-      this.defaultSelectText = "Seç";
-      this.$http.post("'https://interview-8a85e.firebaseio.com/questions.json'",{})
+      if (this.questionLevel && this.questionText) {
+        this.$http
+          .post("questions.json", {
+            level: this.questionLevel,
+            text: this.questionText
+          })
+          .then(res => {
+            console.log(res);
+            this.$swal.fire({
+              title: "Məlumat əlavə olundu",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1000
+            });
+          });
+        this.questionLevel = null;
+        this.questionText = null;
+        this.defaultSelectText = "Seç";
+      }
     },
     changeSelect({ data, text }) {
       this.questionLevel = data[0].value;
@@ -49,8 +63,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.bootstrap-select {
-  width: 100%;
-}
-</style>
