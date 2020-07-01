@@ -4,7 +4,7 @@
     <td>{{question.text}}</td>
     <td style="width: 100px;text-align:center">{{levelToText()}}</td>
     <td style="width: 100px">
-      <a href="#" class="editBtn" v-b-modal.editQuestionModal @click="goToEditModal">
+      <a href="#" class="editBtn" v-b-modal.editQuestionModal @click.prevent="goToEditModal">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -25,7 +25,7 @@
           </g>
         </svg>
       </a>
-      <a href="#" class="removeBtn">
+      <a href="#" class="removeBtn" v-b-modal.removeQuestionModal @click.prevent="removeThisRow">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           id="Layer_1"
@@ -65,7 +65,10 @@ export default {
       }
     },
     goToEditModal() {
-      this.$emit("currentRowData", this.index);
+      this.$emit("currentEditData", this.index);
+    },
+    removeThisRow(){
+      this.$emit("currentRemoveData", this.index);
     }
   }
 };

@@ -3,15 +3,19 @@
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <div class="mainView">
+          <transition
+            enter-active-class="animate__animated animate__fadeInLeft animate__faster"
+            leave-active-class="animate__animated animate__fadeOutRight animate__faster"
+            mode="out-in"
+          >
             <router-view></router-view>
-          </div>
+          </transition>
         </div>
       </div>
     </div>
   </main>
 </template>
-<style lang="scss" scoped>
+<style lang="scss">
 main {
   margin: 80px 0;
   .mainView {

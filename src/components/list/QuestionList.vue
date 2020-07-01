@@ -1,60 +1,90 @@
 <template>
-  <div class="row justify-content-center">
-    <div class="col-12">
-      <table class="table table-bordered table-hover">
-        <thead class="text-center">
-          <tr class="table-active">
-            <th class="text-left">№</th>
-            <th class="text-left">Sual</th>
-            <th>Çətinlik</th>
-            <th>Düzəliş</th>
-          </tr>
-        </thead>
-        <tbody>
-          <QuestionRow
-            v-for="(question,index) in questionList"
-            :key="index"
-            :question="question"
-            :index="index"
-            @currentRowData="editIndex=$event"
-          />
-        </tbody>
-      </table>
-    </div>
+  <div class="mainView">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <p class="alert alert-warning" v-if="!questionList.length">Məlumat yoxdur</p>
+        <table class="table table-bordered table-hover" v-else>
+          <thead class="text-center">
+            <tr class="table-active">
+              <th class="text-left">№</th>
+              <th class="text-left">Sual</th>
+              <th>Çətinlik</th>
+              <th>Düzəliş</th>
+            </tr>
+          </thead>
+          <tbody>
+            <QuestionRow
+              v-for="(question,index) in questionList"
+              :key="question.id"
+              :question="question"
+              :index="index"
+              @currentEditData="getCurrentData($event)"
+              @currentRemoveData="getCurrentRemoveIndex($event)"
+            />
+          </tbody>
+        </table>
+      </div>
 
-    <b-modal id="editQuestionModal" title="Düzəliş">
-      <div class="form-group">
-        <label>Sual</label>
-        <textarea cols="30" rows="3" class="form-control" v-model="questionList[editIndex].text"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="questionLevel">Çətinlik</label>
-        <label for="easyLevel">
-          <input type="radio" name="questionLevel" id="easyLevel" value="1" v-model="questionList[editIndex].level" />
-          <span>Asan</span>
-        </label>
-        <label for="middleLevel">
-          <input
-            type="radio"
-            name="questionLevel"
-            id="middleLevel"
-            value="2"
-            v-model="questionList[editIndex].level"
-          />
-          <span>Orta</span>
-        </label>
-        <label for="hardLevel">
-          <input type="radio" name="questionLevel" id="hardLevel" value="3" v-model="questionList[editIndex].level" />
-          <span>Çətin</span>
-        </label>
-      </div>
-      <template v-slot:modal-footer>
-        <div class="w-100 text-right">
-          <b-button variant="pr">Təsdiqlə</b-button>
-          <b-button variant="secondary">Ləğv et</b-button>
+      <b-modal id="editQuestionModal" title="Düzəliş">
+        <div class="form-group">
+          <label>Sual</label>
+          <textarea cols="30" rows="3" class="form-control" v-model="selectedObj.text"></textarea>
         </div>
-      </template>
-    </b-modal>
+        <div class="form-group">
+          <label for="questionLevel">Çətinlik</label>
+          <label for="easyLevel">
+            <input
+              type="radio"
+              name="questionLevel"
+              id="easyLevel"
+              value="1"
+              v-model="selectedObj.level"
+            />
+            <span>Asan</span>
+          </label>
+          <label for="middleLevel">
+            <input
+              type="radio"
+              name="questionLevel"
+              id="middleLevel"
+              value="2"
+              v-model="selectedObj.level"
+            />
+            <span>Orta</span>
+          </label>
+          <label for="hardLevel">
+            <input
+              type="radio"
+              name="questionLevel"
+              id="hardLevel"
+              value="3"
+              v-model="selectedObj.level"
+            />
+            <span>Çətin</span>
+          </label>
+        </div>
+        <template v-slot:modal-footer>
+          <div class="w-100 text-right">
+            <b-button variant="pr" @click="updateCurrentRow">Təsdiqlə</b-button>
+            <b-button variant="secondary" @click="$bvModal.hide('editQuestionModal')">Ləğv et</b-button>
+          </div>
+        </template>
+      </b-modal>
+      <b-modal
+        id="removeQuestionModal"
+        title="Diqqət!"
+        header-bg-variant="danger"
+        header-text-variant="light"
+      >
+        <h5>Məlumat silinəcək</h5>
+        <template v-slot:modal-footer>
+          <div class="w-100 text-right">
+            <b-button variant="pr" @click="removeCurrentRow">Təsdiqlə</b-button>
+            <b-button variant="secondary" @click="$bvModal.hide('removeQuestionModal')">Ləğv et</b-button>
+          </div>
+        </template>
+      </b-modal>
+    </div>
   </div>
 </template>
 <script>
@@ -62,22 +92,37 @@ import QuestionRow from "./QuestionRow";
 export default {
   data() {
     return {
-      questionList: [],
-      questionLevel: "1",
-      editIndex: 0
+      editIndex: 0,
+      removeIndex: null,
+      selectedObj: {
+        id: null,
+        text: null,
+        level: 0
+      }
     };
   },
-  methods: {
-    changeSelect() {
-      console.log(1);
+  computed: {
+    questionList() {
+      return this.$store.getters.getQuestions;
     }
   },
-  created() {
-    this.$http.get("questions.json").then(res => {
-      for (var i in res.data) {
-        this.questionList.push(res.data[i]);
-      }
-    });
+  methods: {
+    getCurrentData(e) {
+      this.selectedObj.id = this.questionList[e].id;
+      this.selectedObj.text = this.questionList[e].text;
+      this.selectedObj.level = this.questionList[e].level;
+    },
+    getCurrentRemoveIndex(e) {
+      this.removeIndex = e;
+    },
+    removeCurrentRow(e) {
+      this.$store.dispatch("removeSelectedData", this.removeIndex);
+      this.$bvModal.hide("removeQuestionModal");
+    },
+    updateCurrentRow() {
+      this.$store.dispatch("updateSelectedData", this.selectedObj);
+      this.$bvModal.hide("editQuestionModal");
+    }
   },
   components: {
     QuestionRow

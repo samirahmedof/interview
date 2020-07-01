@@ -17,6 +17,9 @@ export default {
     Main,
     Header,
     Footer
+  },
+  created() {
+    this.$store.dispatch("addQuestionList");
   }
 };
 </script>
