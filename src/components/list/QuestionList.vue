@@ -2,7 +2,7 @@
   <div class="mainView">
     <div class="row justify-content-center">
       <div class="col-12">
-        <p class="alert alert-warning" v-if="!questionList.length">Məlumat yoxdur</p>
+        <p class="alert alert-warning" v-if="!questionList">Məlumat yoxdur</p>
         <table class="table table-bordered table-hover" v-else>
           <thead class="text-center">
             <tr class="table-active">

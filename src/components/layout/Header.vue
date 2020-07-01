@@ -5,7 +5,7 @@
         <div class="col-6">
           <h1>interview</h1>
         </div>
-        <div class="col-6">
+        <div class="col-6" v-if="$store.getters.getIsLogged">
           <div class="menuArea">
             <ul>
               <li>
@@ -22,6 +22,7 @@
               </li>
             </ul>
           </div>
+          
         </div>
       </div>
     </div>

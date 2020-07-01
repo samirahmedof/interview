@@ -10,14 +10,14 @@
           <form>
             <div class="form-group">
               <label>Email</label>
-              <input type="text" class="form-control" />
+              <input type="text" class="form-control" v-model="user.email" />
             </div>
             <div class="form-group">
               <label>Şifrə</label>
-              <input type="password" class="form-control" />
+              <input type="password" class="form-control" v-model="user.pass" />
             </div>
             <div class="form-group text-center">
-              <button class="btn btn-pr">Daxil ol</button>
+              <button class="btn btn-pr" @click.prevent="checkUser">Daxil ol</button>
             </div>
           </form>
           <hr />
@@ -29,23 +29,23 @@
           <form>
             <div class="form-group">
               <label>Ad, Soyad</label>
-              <input type="text" class="form-control" />
+              <input type="text" class="form-control" v-model="reg.fullname" />
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="text" class="form-control" />
+              <input type="text" class="form-control" v-model="reg.email" />
             </div>
             <div class="form-group">
               <label>Şifrə</label>
-              <input type="password" class="form-control" />
+              <input type="password" class="form-control" v-model="reg.pass1" />
             </div>
             <div class="form-group">
               <label>Təkrar şifrə</label>
-              <input type="password" class="form-control" />
+              <input type="password" class="form-control" v-model="reg.pass2" />
             </div>
 
             <div class="form-group text-center">
-              <button class="btn btn-pr">Qeydiyyatdan keç</button>
+              <button class="btn btn-pr" @click.prevent="checkRegistration">Qeydiyyatdan keç</button>
             </div>
           </form>
           <hr />
@@ -61,9 +61,44 @@
 export default {
   data() {
     return {
-      loginPage: true
+      loginPage: true,
+      reg: {
+        fullname: null,
+        email: null,
+        pass1: null,
+        pass2: null
+      },
+      user: {
+        email: null,
+        pass: null
+      }
     };
-  }
+  },
+  methods: {
+    checkUser() {
+      if (this.user.email && this.user.pass) {
+        this.$store.dispatch("checkUserLogin", this.user);
+      } else {
+        alert("sehv");
+      }
+    },
+    checkRegistration() {
+      if (
+        this.reg.fullname &&
+        this.reg.email &&
+        this.reg.pass1 &&
+        this.reg.pass1 &&
+        this.reg.pass1 == this.reg.pass2
+      ) {
+        this.$store.dispatch("addNewUser", this.reg);
+      } else {
+        alert("sehv");
+      }
+    }
+  },
+  // beforeRouteEnter(to, from, next) {
+    
+  // }
 };
 </script>
 <style lang="scss" scoped>

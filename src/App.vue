@@ -19,7 +19,7 @@ export default {
     Footer
   },
   created() {
-    this.$store.dispatch("addQuestionList");
+    this.$store.dispatch("checkSession");
   }
 };
 </script>
