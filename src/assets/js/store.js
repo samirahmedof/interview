@@ -40,8 +40,11 @@ export const store = new Vuex.Store({
         },
         addDataToState(state, value) {
             state.user.questions.push(value);
+        },
+        getLogout(state) {
+            state.isLogged = false;
+            state.user = null;
         }
-
     },
     actions: {
         addNewUser({ }, value) {
@@ -53,7 +56,6 @@ export const store = new Vuex.Store({
                     questions: null
                 })
                 .then(res => {
-                    console.log(res)
                     Vue.swal.fire({
                         title: "Qeydiyyat uğurla başa çatdı",
                         icon: "success",
@@ -74,17 +76,20 @@ export const store = new Vuex.Store({
                                 fullname: res.data[i].fullname,
                                 email: res.data[i].email,
                                 pass: res.data[i].pass,
-                                questions: res.data[i].questions
+                                questions: []
+                            }
+                            for (const j in res.data[i].questions) {
+                                var question = res.data[i].questions[j];
+                                question.id = j;
+                                user.questions.push(question);
                             }
                             break;
                         }
                     }
                     if (user) {
-                        console.log(1);
                         commit("setUser", user);
                         localStorage.setItem("interviewUserLogin", user.id);
                         router.push("/");
-                        // location.reload();
                     }
                     else {
                         Vue.swal.fire({
@@ -111,7 +116,12 @@ export const store = new Vuex.Store({
                                     fullname: res.data[i].fullname,
                                     email: res.data[i].email,
                                     pass: res.data[i].pass,
-                                    questions: res.data[i].questions
+                                    questions: []
+                                }
+                                for (const j in res.data[i].questions) {
+                                    var question = res.data[i].questions[j];
+                                    question.id = j;
+                                    user.questions.push(question);
                                 }
                                 break;
                             }
@@ -125,52 +135,49 @@ export const store = new Vuex.Store({
                 if (router.history.current.path != '/login')
                     router.push('/login');
             }
+        },
+        removeSelectedData({ state, commit }, value) {
+            var deleteId = state.user.questions[value].id;
+            Vue.http.delete("users/" + state.user.id + "/questions/" + deleteId + ".json").then(res => {
+                commit("removeSelectedDataFromState", value);
+                Vue.swal.fire({
+                    title: "Məlumat silindi",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            });
+        },
+        updateSelectedData({ state, commit }, value) {
+            var updatedId = value.id;
+            var updatedText = value.text;
+            var updatedLevel = value.level;
+            Vue.http.put("users/" + state.user.id + "/questions/" + updatedId + ".json", { text: updatedText, level: updatedLevel }).then(res => {
+                commit("updateSelectedDataFromState", value);
+                Vue.swal.fire({
+                    title: "Məlumat dəyişdirildi",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            });
+        },
+        addNewQuestion({ state, commit }, value) {
+            Vue.http
+                .post(`users/` + state.user.id + `/questions.json`, {
+                    level: value.level,
+                    text: value.text
+                })
+                .then(res => {
+                    value.id = res.body.name;
+                    commit("addDataToState", value);
+                    Vue.swal.fire({
+                        title: "Məlumat əlavə olundu",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
+                });
         }
-        // removeSelectedData({ state, commit }, value) {
-        //     var deleteId = state.questions[value].id;
-        //     Vue.http.delete("questions/" + deleteId + ".json").then(res => {
-        //         // console.log(res);
-        //         commit("removeSelectedDataFromState", value);
-        //         Vue.swal.fire({
-        //             title: "Məlumat silindi",
-        //             icon: "success",
-        //             showConfirmButton: false,
-        //             timer: 1000
-        //         });
-        //     });
-        // },
-        // updateSelectedData({ commit }, value) {
-        //     var updatedId = value.id;
-        //     var updatedText = value.text;
-        //     var updatedLevel = value.level;
-
-        //     Vue.http.put("questions/" + updatedId + ".json", { text: updatedText, level: updatedLevel }).then(res => {
-        //         // console.log(res);
-        //         commit("updateSelectedDataFromState", value);
-        //         Vue.swal.fire({
-        //             title: "Məlumat dəyişdirildi",
-        //             icon: "success",
-        //             showConfirmButton: false,
-        //             timer: 1000
-        //         });
-        //     });
-        // },
-        // addNewQuestion({ commit }, value) {
-        //     Vue.http
-        //         .post("questions.json", {
-        //             level: value.level,
-        //             text: value.text
-        //         })
-        //         .then(res => {
-        //             value.id = res.body.name;
-        //             commit("addDataToState", value);
-        //             Vue.swal.fire({
-        //                 title: "Məlumat əlavə olundu",
-        //                 icon: "success",
-        //                 showConfirmButton: false,
-        //                 timer: 1000
-        //             });
-        //         });
-        // }
     }
 });

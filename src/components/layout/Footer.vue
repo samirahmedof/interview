@@ -40,7 +40,7 @@ export default {
     logout() {
       localStorage.removeItem("interviewUserLogin");
       this.$router.push("/login");
-      this.$store.commit("changeUserLog", false);
+      this.$store.commit("getLogout");
     }
   }
 };
