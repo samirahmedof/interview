@@ -37,6 +37,7 @@ export const store = new Vuex.Store({
 
             state.user.questions[changedIndex].text = value.text;
             state.user.questions[changedIndex].level = value.level;
+            state.user.questions[changedIndex].tags = value.tags;
         },
         addDataToState(state, value) {
             state.user.questions.push(value);
@@ -53,7 +54,8 @@ export const store = new Vuex.Store({
                     fullname: value.fullname,
                     email: value.email,
                     pass: value.pass1,
-                    questions: null
+                    questions: null,
+                    tags: null
                 })
                 .then(res => {
                     Vue.swal.fire({
@@ -76,12 +78,18 @@ export const store = new Vuex.Store({
                                 fullname: res.data[i].fullname,
                                 email: res.data[i].email,
                                 pass: res.data[i].pass,
-                                questions: []
+                                questions: [],
+                                tags: []
                             }
                             for (const j in res.data[i].questions) {
                                 var question = res.data[i].questions[j];
                                 question.id = j;
                                 user.questions.push(question);
+                            }
+                            for (const j in res.data[i].tags) {
+                                var tag = res.data[i].tags[j];
+                                tag.id = j;
+                                user.tags.push(tag);
                             }
                             break;
                         }
@@ -116,12 +124,18 @@ export const store = new Vuex.Store({
                                     fullname: res.data[i].fullname,
                                     email: res.data[i].email,
                                     pass: res.data[i].pass,
-                                    questions: []
+                                    questions: [],
+                                    tags: []
                                 }
                                 for (const j in res.data[i].questions) {
                                     var question = res.data[i].questions[j];
                                     question.id = j;
                                     user.questions.push(question);
+                                }
+                                for (const j in res.data[i].tags) {
+                                    var tag = res.data[i].tags[j];
+                                    tag.id = j;
+                                    user.tags.push(tag);
                                 }
                                 break;
                             }
@@ -152,7 +166,8 @@ export const store = new Vuex.Store({
             var updatedId = value.id;
             var updatedText = value.text;
             var updatedLevel = value.level;
-            Vue.http.put("users/" + state.user.id + "/questions/" + updatedId + ".json", { text: updatedText, level: updatedLevel }).then(res => {
+            var updatedTags = value.tags;
+            Vue.http.put("users/" + state.user.id + "/questions/" + updatedId + ".json", { text: updatedText, level: updatedLevel, tags: updatedTags }).then(res => {
                 commit("updateSelectedDataFromState", value);
                 Vue.swal.fire({
                     title: "Məlumat dəyişdirildi",
@@ -166,7 +181,8 @@ export const store = new Vuex.Store({
             Vue.http
                 .post(`users/` + state.user.id + `/questions.json`, {
                     level: value.level,
-                    text: value.text
+                    text: value.text,
+                    tags: value.tags
                 })
                 .then(res => {
                     value.id = res.body.name;

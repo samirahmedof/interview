@@ -43,5 +43,16 @@ body {
   background: #00000070;
 }
 .bootstrap-select {
-  width: 100%!important;
+  width: 100% !important;
+}
+.vue-input-tag-wrapper .input-tag {
+  background-color: #004085!important;
+  border-radius: 5px!important;
+  border: 1px solid #004085!important;
+  color: white!important;
+  padding: 3px 7px!important;
+}
+.vue-input-tag-wrapper a.remove {
+  color: white!important;
+  margin-left: 5px;
 }

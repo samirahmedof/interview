@@ -3,6 +3,7 @@
     <td style="width: 50px">{{index+1}}</td>
     <td>{{question.text}}</td>
     <td style="width: 100px;text-align:center">{{levelToText()}}</td>
+    <td style="width: 100px;text-align:center">{{tagValues()}}</td>
     <td style="width: 100px">
       <a href="#" class="editBtn" v-b-modal.editQuestionModal @click.prevent="goToEditModal">
         <svg
@@ -67,8 +68,18 @@ export default {
     goToEditModal() {
       this.$emit("currentEditData", this.index);
     },
-    removeThisRow(){
+    removeThisRow() {
       this.$emit("currentRemoveData", this.index);
+    },
+    tagValues() {
+      var result = "";
+      for (let i = 0; i < this.question.tags.length; i++) {
+        result += this.question.tags[i];
+        if (this.question.tags.length != i + 1) {
+          result += ",";
+        }
+      }
+      return result;
     }
   }
 };

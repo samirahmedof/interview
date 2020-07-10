@@ -9,6 +9,7 @@
               <th class="text-left">№</th>
               <th class="text-left">Sual</th>
               <th>Çətinlik</th>
+              <th>Tag</th>
               <th>Düzəliş</th>
             </tr>
           </thead>
@@ -63,6 +64,10 @@
             <span>Çətin</span>
           </label>
         </div>
+        <div class="form-group">
+          <label>Tags</label>
+          <input-tag v-model="selectedObj.tags"></input-tag>
+        </div>
         <template v-slot:modal-footer>
           <div class="w-100 text-right">
             <b-button variant="pr" @click="updateCurrentRow">Təsdiqlə</b-button>
@@ -88,6 +93,7 @@
   </div>
 </template>
 <script>
+import InputTag from "vue-input-tag";
 import QuestionRow from "./QuestionRow";
 export default {
   data() {
@@ -97,7 +103,8 @@ export default {
       selectedObj: {
         id: null,
         text: null,
-        level: 0
+        level: 0,
+        tags: []
       }
     };
   },
@@ -111,6 +118,7 @@ export default {
       this.selectedObj.id = this.questionList[e].id;
       this.selectedObj.text = this.questionList[e].text;
       this.selectedObj.level = this.questionList[e].level;
+      this.selectedObj.tags = this.questionList[e].tags;
     },
     getCurrentRemoveIndex(e) {
       this.removeIndex = e;
@@ -125,7 +133,8 @@ export default {
     }
   },
   components: {
-    QuestionRow
+    QuestionRow,
+    InputTag
   }
 };
 </script>
