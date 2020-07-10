@@ -73,12 +73,15 @@ export default {
     },
     tagValues() {
       var result = "";
-      for (let i = 0; i < this.question.tags.length; i++) {
-        result += this.question.tags[i];
-        if (this.question.tags.length != i + 1) {
-          result += ",";
+      if (this.question.tags) {
+        for (let i = 0; i < this.question.tags.length; i++) {
+          result += this.question.tags[i];
+          if (this.question.tags.length != i + 1) {
+            result += ",";
+          }
         }
       }
+
       return result;
     }
   }

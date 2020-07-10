@@ -1,6 +1,9 @@
 <template>
   <li class="list-group-item" :class="{'complatedQuestion':isComplated}">
-    {{question.text}}
+    <div>{{question.text}}</div>
+    <div class="tagDiv">
+      <span v-for="tag in question.tags" :key="tag.id">{{tag}}</span>
+    </div>
     <div class="questionResult">
       <div class="row h-100 align-items-center">
         <div class="col-6">
@@ -172,6 +175,17 @@ li {
     // border: 2px solid #94bd9e;
     background: #94bd9e;
     color: white;
+  }
+  .tagDiv {
+    span {
+      display: inline-block;
+      background: #00408599;
+      margin-right: 3px;
+      color: white;
+      padding: 3px 7px;
+      border-radius: 5px;
+      margin-bottom: 3px;
+    }
   }
 }
 </style>

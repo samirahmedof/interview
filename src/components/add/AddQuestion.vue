@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     addToDb() {
-      if (this.questionLevel && this.questionText) {
+      if (this.questionLevel && this.questionText && this.questionTags.length) {
         var currObj = {
           level: this.questionLevel,
           text: this.questionText,
