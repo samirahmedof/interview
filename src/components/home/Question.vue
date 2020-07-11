@@ -1,8 +1,16 @@
 <template>
-  <li class="list-group-item" :class="{'complatedQuestion':isComplated}">
-    <div>{{question.text}}</div>
-    <div class="tagDiv">
-      <span v-for="tag in question.tags" :key="tag.id">{{tag}}</span>
+  <li
+    class="list-group-item"
+    :class="[{'easy':question.level=='1'},{'medium':question.level=='2'},{'hard':question.level=='3'},{'complatedQuestion':isComplated}]"
+  >
+    <div class="contentArea">
+      <div class="questionText">
+        <p>{{question.text}}</p>
+      </div>
+      <div class="tagDiv">
+        <span v-for="tag in question.tags" :key="tag.id">{{tag}}</span>
+      </div>
+      <div class="questionLevel">{{levelToText()}}</div>
     </div>
     <div class="questionResult">
       <div class="row h-100 align-items-center">
@@ -13,7 +21,7 @@
                 <a
                   href="#"
                   class="starIcon"
-                  @click="fillStars(index)"
+                  @click.prevent="fillStars(index)"
                   :class="{'filled':count<=questionStars}"
                 >
                   <svg
@@ -37,7 +45,7 @@
         </div>
         <div class="col-6">
           <div class="btnArea">
-            <a href="#" title="Cavab verilmədi" @click="canNotAnswer">
+            <a href="#" title="Cavab verilmədi" @click.prevent="canNotAnswer">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -58,7 +66,7 @@
                 </g>
               </svg>
             </a>
-            <a href="#" title="Təmizlə" @click="clearResult">
+            <a href="#" title="Təmizlə" @click.prevent="clearResult">
               <svg xmlns="http://www.w3.org/2000/svg" height="512" viewBox="0 0 16 16" width="512">
                 <path
                   d="m12 8c0-1.6543-1.3457-3-3-3h-1.36731l.359497-2.87598c.0053711-.0410156.0078125-.0825195.0078125-.124023 0-1.10303-.896973-2-2-2-1.10303 0-2 .896973-2 2 0 .0415039.0024414.0830078.0078125.124023l.359497 2.87598h-1.36731c-1.6543 0-3 1.3457-3 3v1h12v-1zm-6-6.5c.276123 0 .5.223816.5.5 0 .276123-.223877.5-.5.5s-.5-.223877-.5-.5c0-.276184.223877-.5.5-.5z"
@@ -83,21 +91,66 @@ export default {
     return {
       starCount: 5,
       isComplated: false,
-      questionStars: 0
+      questionStars: 0,
+      sendedCount: 0
     };
   },
   methods: {
     fillStars(index) {
-      this.questionStars = index + 1;
-      this.isComplated = true;
+      if (this.questionStars != index + 1) {
+        this.questionStars = index + 1;
+        this.isComplated = true;
+
+        var sendObj = {
+          id: this.question.id,
+          level: this.question.level,
+          starResult: this.questionStars - this.sendedCount,
+          clear: false
+        };
+
+        this.$emit("currentQuestionResult", sendObj);
+        this.sendedCount = this.questionStars;
+      }
     },
     clearResult() {
-      this.questionStars = 0;
-      this.isComplated = false;
+      if (this.isComplated == true) {
+        this.questionStars = 0;
+        this.isComplated = false;
+        var sendObj = {
+          id: this.question.id,
+          level: this.question.level,
+          starResult: this.sendedCount,
+          clear: true
+        };
+        this.$emit("currentQuestionResult", sendObj);
+        this.sendedCount = 0;
+      }
     },
     canNotAnswer() {
       this.questionStars = 0;
       this.isComplated = true;
+      var sendObj = {
+        id: this.question.id,
+        level: this.question.level,
+        starResult: this.questionStars - this.sendedCount,
+        clear: false
+      };
+
+      this.$emit("currentQuestionResult", sendObj);
+      this.sendedCount = this.questionStars;
+    },
+    levelToText() {
+      switch (this.question.level) {
+        case "1":
+          return "A";
+          break;
+        case "2":
+          return "O";
+          break;
+        case "3":
+          return "Ç";
+          break;
+      }
     }
   }
 };
@@ -172,9 +225,8 @@ li {
     }
   }
   &.complatedQuestion {
-    // border: 2px solid #94bd9e;
-    background: #94bd9e;
-    color: white;
+    background: #94bd9e !important;
+    color: white !important;
   }
   .tagDiv {
     span {
@@ -182,9 +234,50 @@ li {
       background: #00408599;
       margin-right: 3px;
       color: white;
-      padding: 3px 7px;
+      padding: 0px 5px;
       border-radius: 5px;
       margin-bottom: 3px;
+      font-size: 12px;
+    }
+  }
+  .questionText p {
+    margin-bottom: 5px;
+    font-size: 17px;
+    line-height: 23px;
+  }
+  .questionLevel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100;
+    height: 100%;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  &.hard {
+    border-color: #900505;
+    background: rgba(144, 5, 5, 0.1);
+    .questionLevel {
+      background: #900505;
+    }
+  }
+  &.medium {
+    border-color: #959d01;
+    background: rgba(149, 157, 1, 0.1);
+    .questionLevel {
+      background: #959d01;
+    }
+  }
+  &.easy {
+    background: rgba(0, 138, 16, 0.1);
+    border-color: #008a10;
+    .questionLevel {
+      background: #008a10;
     }
   }
 }

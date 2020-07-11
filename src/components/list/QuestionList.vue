@@ -9,7 +9,7 @@
               <th class="text-left">№</th>
               <th class="text-left">Sual</th>
               <th>Çətinlik</th>
-              <th>Tag</th>
+              <th>Etiket</th>
               <th>Düzəliş</th>
             </tr>
           </thead>

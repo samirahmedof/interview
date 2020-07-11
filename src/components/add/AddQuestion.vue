@@ -15,7 +15,7 @@
           />
         </div>
         <div class="form-group">
-          <label>Tag</label>
+          <label>Etiket</label>
           <input-tag v-model="questionTags"></input-tag>
         </div>
         <div class="form-group text-center">

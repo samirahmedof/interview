@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="col-12" v-else>
-        <MainQuestions></MainQuestions>
+        <MainQuestions @cancelInterview="cancelFunc" :applicant="fullname"></MainQuestions>
       </div>
     </div>
   </div>
@@ -30,6 +30,10 @@ export default {
       if (this.fullname) {
         this.formComplated = true;
       }
+    },
+    cancelFunc() {
+      this.formComplated = false;
+      this.fullname = "";
     }
   },
   components: {

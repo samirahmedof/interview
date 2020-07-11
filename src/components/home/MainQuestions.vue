@@ -1,6 +1,9 @@
 <template>
   <div class="row">
     <div class="col-12">
+      <h4>{{applicant}}</h4>
+    </div>
+    <div class="col-12">
       <div class="tagsArea">
         <Tags
           v-for="(tag,index) in questionTags"
@@ -13,26 +16,72 @@
     </div>
     <div class="col-12">
       <ul class="list-group">
-        <Question v-for="question in exampleArr" :key="question.id" :question="question"></Question>
+        <Question
+          v-for="question in exampleArr"
+          :key="question.id"
+          :question="question"
+          @currentQuestionResult="changeResultTable($event)"
+        ></Question>
       </ul>
     </div>
     <div class="col-12 text-center mt-3">
-      <a href="#" class="btn btn-pr mr-2" @click="removeEl">Bitir</a>
-      <a href="#" class="btn btn-sec">Ləğv et</a>
+      <a href="#" class="btn btn-pr mr-2" @click.prevent="removeEl">Bitir</a>
+      <a href="#" class="btn btn-sec" @click.prevent="cancelInterview">Ləğv et</a>
+    </div>
+    <div class="currentResults" v-draggable>
+      <table>
+        <tbody>
+          <tr>
+            <td>Sual sayı</td>
+            <td>{{currentResult.count}}</td>
+          </tr>
+          <tr>
+            <td>Müvəffəqiyyət</td>
+            <td>{{currentResult.percent}}</td>
+          </tr>
+          <tr>
+            <td>Çətin</td>
+            <td>{{currentResult.level.hard}}</td>
+          </tr>
+          <tr>
+            <td>Orta</td>
+            <td>{{currentResult.level.medium}}</td>
+          </tr>
+          <tr>
+            <td>Asan</td>
+            <td>{{currentResult.level.easy}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 <script>
 import Question from "./Question";
 import Tags from "./Tags";
+import { Draggable } from "draggable-vue-directive";
 export default {
+  props: ["applicant"],
   data() {
     return {
       questions: [],
       questionTags: [],
       exampleArr: [],
-      selectedTagsIndex: []
+      selectedTagsIndex: [],
+      currentResult: {
+        count: 0,
+        percent: 0,
+        level: {
+          hard: 0,
+          medium: 0,
+          easy: 0
+        }
+      },
+      answeredQuestions: []
     };
+  },
+  directives: {
+    Draggable
   },
   created() {
     this.questions = this.$store.getters.getQuestions;
@@ -64,6 +113,47 @@ export default {
     },
     removeEl() {
       this.questions[0].isShow = false;
+    },
+    cancelInterview() {
+      this.$emit("cancelInterview");
+    },
+    changeResultTable(e) {
+      var resultIndex = this.answeredQuestions.indexOf(e.id);
+      if (e.clear) {
+        if (resultIndex != -1) {
+          this.answeredQuestions.splice(resultIndex, 1);
+          this.currentResult.count--;
+          this.currentResult.percent -= e.starResult;
+          switch (e.level) {
+            case "1":
+              this.currentResult.level.easy--;
+              break;
+            case "2":
+              this.currentResult.level.medium--;
+              break;
+            case "3":
+              this.currentResult.level.hard--;
+              break;
+          }
+        }
+      } else {
+        if (resultIndex == -1) {
+          this.answeredQuestions.push(e.id);
+          this.currentResult.count++;
+          switch (e.level) {
+            case "1":
+              this.currentResult.level.easy++;
+              break;
+            case "2":
+              this.currentResult.level.medium++;
+              break;
+            case "3":
+              this.currentResult.level.hard++;
+              break;
+          }
+        }
+        this.currentResult.percent += e.starResult;
+      }
     }
   },
   watch: {
@@ -94,7 +184,7 @@ export default {
         this.exampleArr = this.questions;
       }
     }
-  },
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -110,6 +200,36 @@ export default {
     padding: 3px 7px;
     border-radius: 5px;
     margin-bottom: 3px;
+  }
+}
+h4 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #ffffff;
+  font-weight: 500;
+  background: #004085;
+  border-radius: 5px;
+  padding: 10px;
+}
+.currentResults {
+  position: fixed;
+  left: calc(100% - 175px);
+  top: calc(100% - 210px);
+  padding: 10px;
+  z-index: 10;
+  border-radius: 5px;
+  cursor: move;
+  user-select: none;
+  // background: #b7a900;
+  background: #b7a9004a;
+  backdrop-filter: blur(5px);
+  table {
+    color: #464646;
+    tr {
+      td {
+        padding: 0 7px;
+      }
+    }
   }
 }
 </style>
