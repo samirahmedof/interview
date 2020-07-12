@@ -15,6 +15,9 @@ export const store = new Vuex.Store({
         },
         getIsLogged(state) {
             return state.isLogged;
+        },
+        getApplicants(state) {
+            return state.user.applicants;
         }
     },
     mutations: {
@@ -45,7 +48,13 @@ export const store = new Vuex.Store({
         getLogout(state) {
             state.isLogged = false;
             state.user = null;
-        }
+        },
+        addApplicantToState(state, value) {
+            state.user.applicants.push(value);
+        },
+        removeResultFromState(state, value) {
+            state.user.applicants.splice(value, 1);
+        },
     },
     actions: {
         addNewUser({ }, value) {
@@ -54,8 +63,8 @@ export const store = new Vuex.Store({
                     fullname: value.fullname,
                     email: value.email,
                     pass: value.pass1,
-                    questions: null,
-                    tags: null
+                    questions: [],
+                    applicants: []
                 })
                 .then(res => {
                     Vue.swal.fire({
@@ -79,17 +88,17 @@ export const store = new Vuex.Store({
                                 email: res.data[i].email,
                                 pass: res.data[i].pass,
                                 questions: [],
-                                tags: []
+                                applicants: []
                             }
                             for (const j in res.data[i].questions) {
                                 var question = res.data[i].questions[j];
                                 question.id = j;
                                 user.questions.push(question);
                             }
-                            for (const j in res.data[i].tags) {
-                                var tag = res.data[i].tags[j];
-                                tag.id = j;
-                                user.tags.push(tag);
+                            for (const j in res.data[i].applicants) {
+                                var applicant = res.data[i].applicants[j];
+                                applicant.id = j;
+                                user.applicants.push(applicant);
                             }
                             break;
                         }
@@ -125,17 +134,17 @@ export const store = new Vuex.Store({
                                     email: res.data[i].email,
                                     pass: res.data[i].pass,
                                     questions: [],
-                                    tags: []
+                                    applicants: []
                                 }
                                 for (const j in res.data[i].questions) {
                                     var question = res.data[i].questions[j];
                                     question.id = j;
                                     user.questions.push(question);
                                 }
-                                for (const j in res.data[i].tags) {
-                                    var tag = res.data[i].tags[j];
-                                    tag.id = j;
-                                    user.tags.push(tag);
+                                for (const j in res.data[i].applicants) {
+                                    var applicant = res.data[i].applicants[j];
+                                    applicant.id = j;
+                                    user.applicants.push(applicant);
                                 }
                                 break;
                             }
@@ -194,6 +203,38 @@ export const store = new Vuex.Store({
                         timer: 1000
                     });
                 });
-        }
+        },
+        addNewResult({ state, commit }, value) {
+            Vue.http
+                .post(`users/` + state.user.id + `/applicants.json`, {
+                    result: value.result,
+                    ans: value.ans,
+                    stars: value.stars,
+                    about: value.about,
+                    date: value.date
+                })
+                .then(res => {
+                    value.id = res.body.name;
+                    commit("addApplicantToState", value);
+                    // Vue.swal.fire({
+                    //     title: "Məlumat əlavə olundu",
+                    //     icon: "success",
+                    //     showConfirmButton: false,
+                    //     timer: 1000
+                    // });
+                });
+        },
+        removeResult({ state, commit }, value) {
+            var deleteId = state.user.applicants[value].id;
+            Vue.http.delete("users/" + state.user.id + "/applicants/" + deleteId + ".json").then(res => {
+                commit("removeResultFromState", value);
+                Vue.swal.fire({
+                    title: "Məlumat silindi",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            });
+        },
     }
 });

@@ -25,7 +25,7 @@
       </ul>
     </div>
     <div class="col-12 text-center mt-3">
-      <a href="#" class="btn btn-pr mr-2" @click.prevent="removeEl">Bitir</a>
+      <a href="#" class="btn btn-pr mr-2" @click.prevent="finishInterview">Bitir</a>
       <a href="#" class="btn btn-sec" @click.prevent="cancelInterview">Ləğv et</a>
     </div>
     <div class="currentResults" v-draggable>
@@ -77,7 +77,8 @@ export default {
           easy: 0
         }
       },
-      answeredQuestions: []
+      answeredQuestions: [],
+      answeredQuestionStars: []
     };
   },
   directives: {
@@ -111,8 +112,39 @@ export default {
         }
       }
     },
-    removeEl() {
-      this.questions[0].isShow = false;
+    finishInterview() {
+      var intDate = new Date();
+
+      var d = intDate.getDate();
+      var m = intDate.getMonth() + 1;
+      var y = intDate.getFullYear();
+      var h = intDate.getHours();
+      var min = intDate.getMinutes();
+
+      if (d < 10) {
+        d = "0" + d;
+      }
+      if (m < 10) {
+        m = "0" + m;
+      }
+      if (h < 10) {
+        h = "0" + h;
+      }
+      if (min < 10) {
+        min = "0" + min;
+      }
+      var dateString = d + "." + m + "." + y + " " + h + ":" + min;
+      var finishObj = {
+        result: this.currentResult,
+        ans: this.answeredQuestions,
+        stars: this.answeredQuestionStars,
+        about: {
+          fullname: this.applicant
+        },
+        date: dateString
+      };
+      this.$emit("finishInterview", this.currentResult);
+      this.$store.dispatch("addNewResult", finishObj);
     },
     cancelInterview() {
       this.$emit("cancelInterview");
@@ -122,6 +154,7 @@ export default {
       if (e.clear) {
         if (resultIndex != -1) {
           this.answeredQuestions.splice(resultIndex, 1);
+          this.answeredQuestionStars.splice(resultIndex, 1);
           this.currentResult.count--;
           this.currentResult.percent -= e.starResult;
           switch (e.level) {
@@ -139,6 +172,7 @@ export default {
       } else {
         if (resultIndex == -1) {
           this.answeredQuestions.push(e.id);
+          this.answeredQuestionStars.push(e.starResult);
           this.currentResult.count++;
           switch (e.level) {
             case "1":
@@ -151,6 +185,8 @@ export default {
               this.currentResult.level.hard++;
               break;
           }
+        } else {
+          this.answeredQuestionStars[resultIndex] += e.starResult;
         }
         this.currentResult.percent += e.starResult;
       }
@@ -220,7 +256,6 @@ h4 {
   border-radius: 5px;
   cursor: move;
   user-select: none;
-  // background: #b7a900;
   background: #b7a9004a;
   backdrop-filter: blur(5px);
   table {
