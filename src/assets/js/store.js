@@ -7,7 +7,8 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
     state: {
         user: {},
-        isLogged: false
+        isLogged: false,
+        loaderShow: true
     },
     getters: {
         getQuestions(state) {
@@ -18,9 +19,15 @@ export const store = new Vuex.Store({
         },
         getApplicants(state) {
             return state.user.applicants;
+        },
+        loader(state) {
+            return state.loaderShow;
         }
     },
     mutations: {
+        setLoader(state, value) {
+            state.loaderShow = value;
+        },
         changeUserLog(state, value) {
             state.isLogged = value;
         },
@@ -57,7 +64,7 @@ export const store = new Vuex.Store({
         },
     },
     actions: {
-        addNewUser({ }, value) {
+        addNewUser({ commit }, value) {
             Vue.http
                 .post("users.json", {
                     fullname: value.fullname,
@@ -67,6 +74,7 @@ export const store = new Vuex.Store({
                     applicants: []
                 })
                 .then(res => {
+                    commit("setLoader", false);
                     Vue.swal.fire({
                         title: "Qeydiyyat uğurla başa çatdı",
                         icon: "success",
@@ -116,6 +124,7 @@ export const store = new Vuex.Store({
                             timer: 1000
                         });
                     }
+                    commit("setLoader", false);
                 });
 
         },
@@ -152,11 +161,16 @@ export const store = new Vuex.Store({
                         if (user) {
                             commit("setUser", user);
                         }
+                        commit("setLoader", false);
                     });
             }
             else {
-                if (router.history.current.path != '/login')
+                if (router.history.current.path != '/login') {
                     router.push('/login');
+                }
+                setTimeout(() => {
+                    commit("setLoader", false);
+                }, 100);
             }
         },
         removeSelectedData({ state, commit }, value) {

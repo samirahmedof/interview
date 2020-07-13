@@ -32,7 +32,7 @@
         size="lg"
         @hide="clearInfoModal"
         header-class="headerColor"
-        scrollable 
+        scrollable
       >
         <div class="row">
           <div class="col-6">
@@ -49,15 +49,15 @@
                 </tr>
                 <tr>
                   <td>Yaş</td>
-                  <td></td>
+                  <td>{{selectedRow.about.age}}</td>
                 </tr>
                 <tr>
                   <td>Biliklər</td>
-                  <td></td>
+                  <td>{{selectedRow.about.skills}}</td>
                 </tr>
                 <tr>
                   <td>Qeyd</td>
-                  <td></td>
+                  <td>{{selectedRow.about.note}}</td>
                 </tr>
               </tbody>
             </table>
@@ -149,7 +149,10 @@ export default {
       removeIndex: null,
       selectedRow: {
         about: {
-          fullname: null
+          fullname: null,
+          age: null,
+          skills: null,
+          note: null
         },
         result: {
           count: null,
@@ -176,6 +179,10 @@ export default {
     getMoreInfoModal(e) {
       var selectedApplicant = this.applicantList[e];
       this.selectedRow.about.fullname = selectedApplicant.about.fullname;
+      this.selectedRow.about.age = selectedApplicant.about.age;
+      this.selectedRow.about.skills = selectedApplicant.about.skills;
+      this.selectedRow.about.note = selectedApplicant.about.note;
+
       this.selectedRow.result.count = selectedApplicant.result.count;
       this.selectedRow.result.level.easy = selectedApplicant.result.level.easy;
       this.selectedRow.result.level.medium =
@@ -196,6 +203,9 @@ export default {
     },
     clearInfoModal() {
       this.selectedRow.about.fullname = null;
+      this.selectedRow.about.age = null;
+      this.selectedRow.about.skills = null;
+      this.selectedRow.about.note = null;
       this.selectedRow.questions = [];
       this.selectedRow.result.count = null;
       this.selectedRow.result.level.easy = null;
@@ -259,9 +269,23 @@ label {
       }
     }
     &.aboutQuestion {
-      tr td:last-of-type {
-        width: 50px;
-        text-align: center;
+      tbody tr {
+        td:last-of-type {
+          width: 50px;
+          text-align: center;
+        }
+        &:nth-of-type(2) {
+          background: #64b068;
+          color: white;
+        }
+        &:nth-of-type(3) {
+          background: #c3c76f;
+          color: white;
+        }
+        &:last-of-type {
+          background: #b35353;
+          color: white;
+        }
       }
     }
     &.questions {

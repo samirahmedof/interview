@@ -1,7 +1,12 @@
 <template>
-  <div class="row">
+  <p class="alert alert-warning" v-if="!exampleArr.length">
+    Bazada sual yoxdur. Sual əlavə etmək üçün
+    <router-link to="/add">Əlavə et</router-link>
+    <span>bölməsinə daxil olun</span>
+  </p>
+  <div class="row" v-else>
     <div class="col-12">
-      <h4>{{applicant}}</h4>
+      <h4>{{applicant.fullname}}, {{applicant.age}}</h4>
     </div>
     <div class="col-12">
       <div class="tagsArea">
@@ -138,9 +143,7 @@ export default {
         result: this.currentResult,
         ans: this.answeredQuestions,
         stars: this.answeredQuestionStars,
-        about: {
-          fullname: this.applicant
-        },
+        about: this.applicant,
         date: dateString
       };
       this.$emit("finishInterview", this.currentResult);

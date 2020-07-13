@@ -2,19 +2,33 @@
   <div class="mainView">
     <div class="row justify-content-center" v-if="!resultShow">
       <div class="col-md-6" v-if="!formComplated">
-        <div class="form-group">
-          <label>Ad, Soyad</label>
-          <input type="text" class="form-control" v-model="fullname" />
-        </div>
-        <div class="form-group text-center">
-          <a href="#" class="btn btn-pr" @click="goToQuestions">Təsdiqlə</a>
-        </div>
+        <form @submit="goToQuestions">
+          <div class="form-group">
+            <label>Ad, Soyad</label>
+            <input type="text" class="form-control" v-model="applicant.fullname" />
+          </div>
+          <div class="form-group">
+            <label>Yaş</label>
+            <input type="text" class="form-control" v-model="applicant.age" />
+          </div>
+          <div class="form-group">
+            <label>Biliklər</label>
+            <input type="text" class="form-control" v-model="applicant.skills" />
+          </div>
+          <div class="form-group">
+            <label>Qeyd</label>
+            <textarea cols="30" rows="3" class="form-control" v-model="applicant.note"></textarea>
+          </div>
+          <div class="form-group text-center">
+            <button type="submit" class="btn btn-pr">Təsdiqlə</button>
+          </div>
+        </form>
       </div>
       <div class="col-12" v-else>
         <MainQuestions
           @cancelInterview="cancelFunc"
           @finishInterview="showResult($event)"
-          :applicant="fullname"
+          :applicant="applicant"
         ></MainQuestions>
       </div>
     </div>
@@ -22,7 +36,7 @@
       <div class="col-6">
         <div class="resultContent">
           <div class="applicantName">
-            <h4>{{fullname}}</h4>
+            <h4>{{applicant.fullname}}</h4>
           </div>
           <table class="table table-bordered">
             <tbody>
@@ -61,7 +75,12 @@ import MainQuestions from "./MainQuestions";
 export default {
   data() {
     return {
-      fullname: null,
+      applicant: {
+        fullname: null,
+        age: null,
+        skills: null,
+        note: null
+      },
       formComplated: false,
       resultShow: false,
       result: null
@@ -71,16 +90,22 @@ export default {
     newInterview() {
       this.resultShow = false;
       this.formComplated = false;
-      this.fullname = null;
+      this.applicant.fullname = null;
+      this.applicant.age = null;
+      this.applicant.skills = null;
+      this.applicant.note = null;
     },
     goToQuestions() {
-      if (this.fullname) {
+      if (this.applicant.fullname) {
         this.formComplated = true;
       }
     },
     cancelFunc() {
       this.formComplated = false;
-      this.fullname = "";
+      this.applicant.fullname = null;
+      this.applicant.age = null;
+      this.applicant.skills = null;
+      this.applicant.note = null;
     },
     showResult(e) {
       this.result = e;
