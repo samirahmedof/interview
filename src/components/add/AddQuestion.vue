@@ -46,6 +46,7 @@ export default {
   },
   methods: {
     addToDb() {
+      this.$store.commit("setLoader", true);
       if (this.questionLevel && this.questionText && this.questionTags.length) {
         var currObj = {
           level: this.questionLevel,
@@ -57,6 +58,9 @@ export default {
         this.questionText = null;
         this.questionTags = [];
         this.defaultSelectText = "Seç";
+      } else {
+        this.$store.commit("setLoader", false);
+        alert("sehv");
       }
     },
     changeSelect({ data, text }) {

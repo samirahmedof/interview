@@ -5,7 +5,7 @@
     <span>bölməsinə daxil olun</span>
   </p>
   <div class="row" v-else>
-    <div class="col-12">
+    <div class="col-12 about">
       <h4>{{applicant.fullname}}, {{applicant.age}}</h4>
     </div>
     <div class="col-12">
@@ -30,8 +30,8 @@
       </ul>
     </div>
     <div class="col-12 text-center mt-3">
-      <a href="#" class="btn btn-pr mr-2" @click.prevent="finishInterview">Bitir</a>
-      <a href="#" class="btn btn-sec" @click.prevent="cancelInterview">Ləğv et</a>
+      <a class="btn btn-pr mr-2" v-b-modal.finishInterviewModal>Bitir</a>
+      <a class="btn btn-sec" v-b-modal.cancelInterviewModal>Ləğv et</a>
     </div>
     <div class="currentResults" v-draggable>
       <table>
@@ -59,12 +59,42 @@
         </tbody>
       </table>
     </div>
+    <b-modal
+      id="cancelInterviewModal"
+      title="Diqqət!"
+      header-bg-variant="warning"
+      header-text-variant="light"
+    >
+      <h5>Ləğv etmək istədiyinizə əminsiniz?</h5>
+      <template v-slot:modal-footer>
+        <div class="w-100 text-right">
+          <b-button variant="pr" @click="cancelInterview">Təsdiqlə</b-button>
+          <b-button variant="secondary" @click="$bvModal.hide('cancelInterviewModal')">Ləğv et</b-button>
+        </div>
+      </template>
+    </b-modal>
+
+    <b-modal
+      id="finishInterviewModal"
+      title="Diqqət!"
+      header-bg-variant="warning"
+      header-text-variant="light"
+    >
+      <h5>Bitirmək istədiyinizə əminsiniz?</h5>
+      <template v-slot:modal-footer>
+        <div class="w-100 text-right">
+          <b-button variant="pr" @click="finishInterview">Təsdiqlə</b-button>
+          <b-button variant="secondary" @click="$bvModal.hide('finishInterviewModal')">Ləğv et</b-button>
+        </div>
+      </template>
+    </b-modal>
   </div>
 </template>
 <script>
 import Question from "./Question";
 import Tags from "./Tags";
 import { Draggable } from "draggable-vue-directive";
+import { eventBus } from "./../../main";
 export default {
   props: ["applicant"],
   data() {
@@ -100,6 +130,7 @@ export default {
       }
     }
     this.questionTags = [...new Set(allTags)];
+    eventBus.$emit("isLogoutShow", false);
   },
   components: {
     Question,
@@ -118,6 +149,7 @@ export default {
       }
     },
     finishInterview() {
+      this.$store.commit("setLoader", true);
       var intDate = new Date();
 
       var d = intDate.getDate();
@@ -223,6 +255,9 @@ export default {
         this.exampleArr = this.questions;
       }
     }
+  },
+  beforeDestroy() {
+    eventBus.$emit("isLogoutShow", true);
   }
 };
 </script>
@@ -241,7 +276,7 @@ export default {
     margin-bottom: 3px;
   }
 }
-h4 {
+.about h4 {
   text-align: center;
   margin-bottom: 30px;
   color: #ffffff;
@@ -268,6 +303,16 @@ h4 {
         padding: 0 7px;
       }
     }
+  }
+}
+</style>
+<style lang="scss">
+.bg-warning {
+  background: #b7a900 !important;
+}
+.modal-body {
+  h5 {
+    font-size: 18px;
   }
 }
 </style>

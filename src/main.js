@@ -37,7 +37,8 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-})
+});
+export const eventBus = new Vue();
 new Vue({
   el: '#app',
   router,

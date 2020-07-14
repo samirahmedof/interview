@@ -49,7 +49,6 @@
 import Main from "./components/layout/Main";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
-
 export default {
   name: "app",
   components: {
@@ -64,7 +63,8 @@ export default {
   },
   created() {
     this.$store.dispatch("checkSession");
-  },
+    
+  }
   // mounted() {
   //   this.$store.commit("setLoader", false);
   // }

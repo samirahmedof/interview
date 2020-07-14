@@ -5,25 +5,30 @@
         <div class="col-6">
           <h1>interview</h1>
         </div>
-        <div class="col-6" v-if="$store.getters.getIsLogged">
-          <div class="menuArea">
-            <ul>
-              <li>
-                <router-link to="/" active-class="active" exact>Əsas</router-link>
-              </li>
-              <li>
-                <router-link to="/questions" active-class="active">Suallar</router-link>
-              </li>
-              <li>
-                <router-link to="/add" active-class="active">Əlavə et</router-link>
-              </li>
-              <li>
-                <router-link to="/results" active-class="active">Nəticələr</router-link>
-              </li>
-            </ul>
+        <transition
+          enter-active-class="animate__animated animate__zoomIn"
+          leave-active-class="animate__animated animate__zoomOut"
+          mode="out-in"
+        >
+          <div class="col-6" v-if="$store.getters.getIsLogged">
+            <div class="menuArea">
+              <ul>
+                <li>
+                  <router-link to="/" active-class="active" exact>Əsas</router-link>
+                </li>
+                <li>
+                  <router-link to="/questions" active-class="active">Suallar</router-link>
+                </li>
+                <li>
+                  <router-link to="/add" active-class="active">Əlavə et</router-link>
+                </li>
+                <li>
+                  <router-link to="/results" active-class="active">Nəticələr</router-link>
+                </li>
+              </ul>
+            </div>
           </div>
-          
-        </div>
+        </transition>
       </div>
     </div>
   </header>

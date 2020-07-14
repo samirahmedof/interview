@@ -81,6 +81,14 @@ export const store = new Vuex.Store({
                         showConfirmButton: false,
                         timer: 1000
                     });
+                }, res => {
+                    commit("setLoader", false);
+                    Vue.swal.fire({
+                        title: "Xəta baş verdi",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
                 });
         },
         checkUserLogin({ commit }, value) {
@@ -125,8 +133,15 @@ export const store = new Vuex.Store({
                         });
                     }
                     commit("setLoader", false);
+                }, res => {
+                    commit("setLoader", false);
+                    Vue.swal.fire({
+                        title: "Xəta baş verdi",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
                 });
-
         },
         checkSession({ commit }) {
             var userId = localStorage.getItem('interviewUserLogin');
@@ -173,13 +188,23 @@ export const store = new Vuex.Store({
                 }, 100);
             }
         },
+
         removeSelectedData({ state, commit }, value) {
             var deleteId = state.user.questions[value].id;
             Vue.http.delete("users/" + state.user.id + "/questions/" + deleteId + ".json").then(res => {
                 commit("removeSelectedDataFromState", value);
+                commit("setLoader", false);
                 Vue.swal.fire({
                     title: "Məlumat silindi",
                     icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }, res => {
+                commit("setLoader", false);
+                Vue.swal.fire({
+                    title: "Xəta baş verdi",
+                    icon: "error",
                     showConfirmButton: false,
                     timer: 1000
                 });
@@ -192,9 +217,18 @@ export const store = new Vuex.Store({
             var updatedTags = value.tags;
             Vue.http.put("users/" + state.user.id + "/questions/" + updatedId + ".json", { text: updatedText, level: updatedLevel, tags: updatedTags }).then(res => {
                 commit("updateSelectedDataFromState", value);
+                commit("setLoader", false);
                 Vue.swal.fire({
                     title: "Məlumat dəyişdirildi",
                     icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }, res => {
+                commit("setLoader", false);
+                Vue.swal.fire({
+                    title: "Xəta baş verdi",
+                    icon: "error",
                     showConfirmButton: false,
                     timer: 1000
                 });
@@ -210,9 +244,18 @@ export const store = new Vuex.Store({
                 .then(res => {
                     value.id = res.body.name;
                     commit("addDataToState", value);
+                    commit("setLoader", false);
                     Vue.swal.fire({
                         title: "Məlumat əlavə olundu",
                         icon: "success",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
+                }, res => {
+                    commit("setLoader", false);
+                    Vue.swal.fire({
+                        title: "Xəta baş verdi",
+                        icon: "error",
                         showConfirmButton: false,
                         timer: 1000
                     });
@@ -230,21 +273,33 @@ export const store = new Vuex.Store({
                 .then(res => {
                     value.id = res.body.name;
                     commit("addApplicantToState", value);
-                    // Vue.swal.fire({
-                    //     title: "Məlumat əlavə olundu",
-                    //     icon: "success",
-                    //     showConfirmButton: false,
-                    //     timer: 1000
-                    // });
+                    commit("setLoader", false);
+                }, res => {
+                    commit("setLoader", false);
+                    Vue.swal.fire({
+                        title: "Xəta baş verdi",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
                 });
         },
         removeResult({ state, commit }, value) {
             var deleteId = state.user.applicants[value].id;
             Vue.http.delete("users/" + state.user.id + "/applicants/" + deleteId + ".json").then(res => {
                 commit("removeResultFromState", value);
+                commit("setLoader", false);
                 Vue.swal.fire({
                     title: "Məlumat silindi",
                     icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }, res => {
+                commit("setLoader", false);
+                Vue.swal.fire({
+                    title: "Xəta baş verdi",
+                    icon: "error",
                     showConfirmButton: false,
                     timer: 1000
                 });

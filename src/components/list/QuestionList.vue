@@ -14,14 +14,14 @@
             </tr>
           </thead>
           <tbody>
-            <QuestionRow
-              v-for="(question,index) in questionList"
-              :key="question.id"
-              :question="question"
-              :index="index"
-              @currentEditData="getCurrentData($event)"
-              @currentRemoveData="getCurrentRemoveIndex($event)"
-            />
+              <QuestionRow
+                v-for="(question,index) in questionList"
+                :key="question.id"
+                :question="question"
+                :index="index"
+                @currentEditData="getCurrentData($event)"
+                @currentRemoveData="getCurrentRemoveIndex($event)"
+              />
           </tbody>
         </table>
       </div>
@@ -124,10 +124,12 @@ export default {
       this.removeIndex = e;
     },
     removeCurrentRow(e) {
+      this.$store.commit("setLoader", true);
       this.$store.dispatch("removeSelectedData", this.removeIndex);
       this.$bvModal.hide("removeQuestionModal");
     },
     updateCurrentRow() {
+      this.$store.commit("setLoader", true);
       this.$store.dispatch("updateSelectedData", this.selectedObj);
       this.$bvModal.hide("editQuestionModal");
     }
@@ -159,5 +161,4 @@ label {
     height: 17px;
   }
 }
-
 </style>

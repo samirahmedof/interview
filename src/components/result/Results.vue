@@ -173,6 +173,7 @@ export default {
   },
   methods: {
     removeCurrentRow() {
+      this.$store.commit("setLoader", true);
       this.$store.dispatch("removeResult", this.removeIndex);
       this.$bvModal.hide("removeResultModal");
     },
@@ -189,16 +190,19 @@ export default {
         selectedApplicant.result.level.medium;
       this.selectedRow.result.level.hard = selectedApplicant.result.level.hard;
       var allQuestions = this.$store.getters.getQuestions;
-      for (let i = 0; i < selectedApplicant.ans.length; i++) {
-        for (let j = 0; j < allQuestions.length; j++) {
-          if (allQuestions[j].id == selectedApplicant.ans[i]) {
-            var currQuestion = allQuestions[j];
-            currQuestion.star = selectedApplicant.stars[i];
-            this.selectedRow.questions.push(currQuestion);
-            break;
+      if (selectedApplicant.ans) {
+        for (let i = 0; i < selectedApplicant.ans.length; i++) {
+          for (let j = 0; j < allQuestions.length; j++) {
+            if (allQuestions[j].id == selectedApplicant.ans[i]) {
+              var currQuestion = allQuestions[j];
+              currQuestion.star = selectedApplicant.stars[i];
+              this.selectedRow.questions.push(currQuestion);
+              break;
+            }
           }
         }
       }
+
       this.$bvModal.show("moreInfoModal");
     },
     clearInfoModal() {

@@ -8,7 +8,12 @@ body {
   -webkit-font-smoothing: antialiased;
   background: #e4e4e4;
 }
-
+a:not([href]) {
+  color: white;
+}
+a:not([href]):hover {
+  color: white;
+}
 .btn-pr {
   background: #b7a900;
   border-color: #b7a900;

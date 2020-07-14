@@ -1,73 +1,85 @@
 <template>
   <div class="mainView">
-    <div class="row justify-content-center" v-if="!resultShow">
-      <div class="col-md-6" v-if="!formComplated">
-        <form @submit="goToQuestions">
-          <div class="form-group">
-            <label>Ad, Soyad</label>
-            <input type="text" class="form-control" v-model="applicant.fullname" />
+    <transition
+      enter-active-class="animate__animated animate__zoomIn animate__faster"
+      leave-active-class="animate__animated animate__zoomOut animate__faster"
+      mode="out-in"
+    >
+      <div class="row justify-content-center" key="main" v-if="!resultShow">
+        <transition
+          enter-active-class="animate__animated animate__zoomIn animate__faster"
+          leave-active-class="animate__animated animate__zoomOut animate__faster"
+          mode="out-in"
+        >
+          <div class="col-md-6" key="form" v-if="!formComplated">
+            <form @submit.prevent="goToQuestions">
+              <div class="form-group">
+                <label>Ad, Soyad</label>
+                <input type="text" class="form-control" v-model="applicant.fullname" />
+              </div>
+              <div class="form-group">
+                <label>Yaş</label>
+                <input type="text" class="form-control" v-model="applicant.age" />
+              </div>
+              <div class="form-group">
+                <label>Biliklər</label>
+                <input type="text" class="form-control" v-model="applicant.skills" />
+              </div>
+              <div class="form-group">
+                <label>Qeyd</label>
+                <textarea cols="30" rows="3" class="form-control" v-model="applicant.note"></textarea>
+              </div>
+              <div class="form-group text-center">
+                <button type="submit" class="btn btn-pr">Təsdiqlə</button>
+              </div>
+            </form>
           </div>
-          <div class="form-group">
-            <label>Yaş</label>
-            <input type="text" class="form-control" v-model="applicant.age" />
+          <div class="col-12" key="questions" v-else>
+            <MainQuestions
+              @cancelInterview="cancelFunc"
+              @finishInterview="showResult($event)"
+              :applicant="applicant"
+            ></MainQuestions>
           </div>
-          <div class="form-group">
-            <label>Biliklər</label>
-            <input type="text" class="form-control" v-model="applicant.skills" />
-          </div>
-          <div class="form-group">
-            <label>Qeyd</label>
-            <textarea cols="30" rows="3" class="form-control" v-model="applicant.note"></textarea>
-          </div>
-          <div class="form-group text-center">
-            <button type="submit" class="btn btn-pr">Təsdiqlə</button>
-          </div>
-        </form>
+        </transition>
       </div>
-      <div class="col-12" v-else>
-        <MainQuestions
-          @cancelInterview="cancelFunc"
-          @finishInterview="showResult($event)"
-          :applicant="applicant"
-        ></MainQuestions>
-      </div>
-    </div>
-    <div class="row justify-content-center" v-else>
-      <div class="col-6">
-        <div class="resultContent">
-          <div class="applicantName">
-            <h4>{{applicant.fullname}}</h4>
+      <div class="row justify-content-center" key="result" v-else>
+        <div class="col-6">
+          <div class="resultContent">
+            <div class="applicantName">
+              <h4>{{applicant.fullname}}</h4>
+            </div>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td>Sual sayı</td>
+                  <td>{{result.count}}</td>
+                </tr>
+                <tr>
+                  <td>Müvəffəqiyyət</td>
+                  <td>{{result.percent}}</td>
+                </tr>
+                <tr>
+                  <td>Çətin</td>
+                  <td>{{result.level.hard}}</td>
+                </tr>
+                <tr>
+                  <td>Orta</td>
+                  <td>{{result.level.medium}}</td>
+                </tr>
+                <tr>
+                  <td>Asan</td>
+                  <td>{{result.level.easy}}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <table class="table table-bordered">
-            <tbody>
-              <tr>
-                <td>Sual sayı</td>
-                <td>{{result.count}}</td>
-              </tr>
-              <tr>
-                <td>Müvəffəqiyyət</td>
-                <td>{{result.percent}}</td>
-              </tr>
-              <tr>
-                <td>Çətin</td>
-                <td>{{result.level.hard}}</td>
-              </tr>
-              <tr>
-                <td>Orta</td>
-                <td>{{result.level.medium}}</td>
-              </tr>
-              <tr>
-                <td>Asan</td>
-                <td>{{result.level.easy}}</td>
-              </tr>
-            </tbody>
-          </table>
+        </div>
+        <div class="col-12 mt-3 text-center">
+          <a class="btn btn-pr" @click.prevent="newInterview">Yeni</a>
         </div>
       </div>
-      <div class="col-12 mt-3 text-center">
-        <a href="#" class="btn btn-pr" @click.prevent="newInterview">Yeni</a>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -98,6 +110,8 @@ export default {
     goToQuestions() {
       if (this.applicant.fullname) {
         this.formComplated = true;
+      } else {
+        alert("sehv");
       }
     },
     cancelFunc() {
@@ -114,6 +128,33 @@ export default {
   },
   components: {
     MainQuestions
+  },
+  
+  beforeRouteLeave(to, from, next) {
+    if (!this.formComplated || this.resultShow) {
+      next();
+    } else {
+      this.$swal
+        .fire({
+          title: "Müsahibə bitməyib!",
+          text: "Nəticə ləğv olunacaq",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#decd00",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Təsdiqlə",
+          cancelButtonText: "Geri"
+        })
+        .then(result => {
+          if (result.value) {
+            console.log(result);
+            next(true);
+          } else {
+            console.log(result);
+            next(false);
+          }
+        });
+    }
   }
 };
 </script>
