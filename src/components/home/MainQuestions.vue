@@ -43,9 +43,11 @@
     <div class="col-12">
       <ul class="list-group">
         <Question
-          v-for="question in exampleArr"
+          v-for="(question,index) in exampleArr"
           :key="question.id"
           :question="question"
+          :index="index"
+          @currentImgData="getCurrentImgIndex($event)"
           @currentQuestionResult="changeResultTable($event)"
         ></Question>
       </ul>
@@ -140,6 +142,10 @@
         </div>
       </template>
     </b-modal>
+
+    <b-modal id="questionImgModal" hide-footer size="xl">
+      <img :src="imgBase64" />
+    </b-modal>
   </div>
 </template>
 <script>
@@ -172,7 +178,8 @@ export default {
         age: null,
         skills: null,
         note: null
-      }
+      },
+      imgBase64: null
     };
   },
   directives: {
@@ -303,6 +310,9 @@ export default {
       this.editApplicant.skills = this.applicant.skills;
       this.editApplicant.note = this.applicant.note;
       this.$bvModal.hide("editApplicantModal");
+    },
+    getCurrentImgIndex(e) {
+      this.imgBase64 = this.questions[e].img;
     }
   },
   watch: {
@@ -393,6 +403,17 @@ export default {
       td {
         padding: 0 7px;
       }
+    }
+  }
+}
+</style>
+<style lang="scss">
+#questionImgModal {
+  .modal-body {
+    text-align: center;
+    img {
+      max-width: 100%;
+      max-height: 70vh;
     }
   }
 }

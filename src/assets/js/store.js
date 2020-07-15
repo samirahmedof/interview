@@ -48,6 +48,7 @@ export const store = new Vuex.Store({
             state.user.questions[changedIndex].text = value.text;
             state.user.questions[changedIndex].level = value.level;
             state.user.questions[changedIndex].tags = value.tags;
+            state.user.questions[changedIndex].img = value.img;
         },
         addDataToState(state, value) {
             state.user.questions.push(value);
@@ -64,33 +65,6 @@ export const store = new Vuex.Store({
         },
     },
     actions: {
-        addNewUser({ commit }, value) {
-            Vue.http
-                .post("users.json", {
-                    fullname: value.fullname,
-                    email: value.email,
-                    pass: value.pass1,
-                    questions: [],
-                    applicants: []
-                })
-                .then(res => {
-                    commit("setLoader", false);
-                    Vue.swal.fire({
-                        title: "Qeydiyyat uğurla başa çatdı",
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1000
-                    });
-                }, res => {
-                    commit("setLoader", false);
-                    Vue.swal.fire({
-                        title: "Xəta baş verdi",
-                        icon: "error",
-                        showConfirmButton: false,
-                        timer: 1000
-                    });
-                });
-        },
         checkUserLogin({ commit }, value) {
             var user;
             Vue.http
@@ -215,7 +189,8 @@ export const store = new Vuex.Store({
             var updatedText = value.text;
             var updatedLevel = value.level;
             var updatedTags = value.tags;
-            Vue.http.put("users/" + state.user.id + "/questions/" + updatedId + ".json", { text: updatedText, level: updatedLevel, tags: updatedTags }).then(res => {
+            var updatedImg = value.img;
+            Vue.http.put("users/" + state.user.id + "/questions/" + updatedId + ".json", { text: updatedText, level: updatedLevel, tags: updatedTags, img: updatedImg }).then(res => {
                 commit("updateSelectedDataFromState", value);
                 commit("setLoader", false);
                 Vue.swal.fire({
@@ -239,7 +214,8 @@ export const store = new Vuex.Store({
                 .post(`users/` + state.user.id + `/questions.json`, {
                     level: value.level,
                     text: value.text,
-                    tags: value.tags
+                    tags: value.tags,
+                    img: value.img
                 })
                 .then(res => {
                     value.id = res.body.name;

@@ -1,7 +1,7 @@
 <template>
   <li
     class="list-group-item"
-    :class="[{'easy':question.level=='1'},{'medium':question.level=='2'},{'hard':question.level=='3'},{'complatedQuestion':isComplated}]"
+    :class="[{'easy':question.level=='1'},{'medium':question.level=='2'},{'hard':question.level=='3'},{'complatedQuestion':isComplated},{'hasImg':question.img}]"
   >
     <div class="contentArea">
       <div class="questionText">
@@ -82,11 +82,37 @@
         </div>
       </div>
     </div>
+    <div class="imgArea" v-if="question.img" v-b-modal.questionImgModal @click.prevent="goToImgModal">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        version="1.1"
+        id="Capa_1"
+        x="0px"
+        y="0px"
+        viewBox="0 0 477.867 477.867"
+        style="enable-background:new 0 0 477.867 477.867;"
+        xml:space="preserve"
+      >
+        <g>
+          <g>
+            <path
+              d="M426.667,68.267H51.2c-28.277,0-51.2,22.923-51.2,51.2V358.4c0,28.277,22.923,51.2,51.2,51.2h375.467    c28.277,0,51.2-22.923,51.2-51.2V119.467C477.867,91.19,454.944,68.267,426.667,68.267z M443.733,266.001L336.333,158.601    c-6.664-6.663-17.468-6.663-24.132,0L170.667,300.134l-56.201-56.201c-6.664-6.663-17.468-6.663-24.132,0l-56.201,56.201V119.467    c0-9.426,7.641-17.067,17.067-17.067h375.467c9.426,0,17.067,7.641,17.067,17.067V266.001z"
+            />
+          </g>
+        </g>
+        <g>
+          <g>
+            <circle cx="153.6" cy="187.733" r="51.2" />
+          </g>
+        </g>
+      </svg>
+    </div>
   </li>
 </template>
 <script>
 export default {
-  props: ["question"],
+  props: ["question","index"],
   data() {
     return {
       starCount: 5,
@@ -151,6 +177,9 @@ export default {
           return "Ç";
           break;
       }
+    },
+    goToImgModal() {
+      this.$emit("currentImgData", this.index);
     }
   }
 };
@@ -168,6 +197,9 @@ li {
     background: #91a7bfeb;
     top: 0;
     opacity: 0;
+    &:hover {
+      opacity: 1;
+    }
     & > .row {
       padding: 5px 15px;
     }
@@ -219,11 +251,7 @@ li {
       }
     }
   }
-  &:hover {
-    .questionResult {
-      opacity: 1;
-    }
-  }
+
   &.complatedQuestion {
     background: #94bd9e !important;
     color: white !important;
@@ -261,23 +289,58 @@ li {
   }
   &.hard {
     border-color: #900505;
-    background: rgba(144, 5, 5, 0.1);
+    background: #f4e6e6;
     .questionLevel {
       background: #900505;
+    }
+    .imgArea {
+      background: #f4e6e6;
+      border-color: #900505;
     }
   }
   &.medium {
     border-color: #959d01;
-    background: rgba(149, 157, 1, 0.1);
+    background: #f4f5e5;
     .questionLevel {
       background: #959d01;
     }
+    .imgArea {
+      background: #f4f5e5;
+      border-color: #959d01;
+    }
   }
   &.easy {
-    background: rgba(0, 138, 16, 0.1);
+    background: #e5f3e7;
     border-color: #008a10;
     .questionLevel {
       background: #008a10;
+    }
+    .imgArea {
+      background: #e5f3e7;
+      border-color: #008a10;
+    }
+  }
+  &.hasImg {
+    border-top-left-radius: 0;
+  }
+  .imgArea {
+    position: absolute;
+    left: -30px;
+    top: -1px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px 0 0 5px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid;
+    border-right: none;
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: #004085;
     }
   }
 }

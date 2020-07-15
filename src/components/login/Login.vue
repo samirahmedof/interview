@@ -134,14 +134,67 @@ export default {
         this.reg.pass1 == this.reg.pass2
       ) {
         this.$store.commit("setLoader", true);
-        this.$store.dispatch("addNewUser", this.reg);
-        this.user.email = this.reg.email;
-        this.user.pass = this.reg.pass1;
-        this.loginPage = true;
-        this.reg.fullname = null;
-        this.reg.email = null;
-        this.reg.pass1 = null;
-        this.reg.pass2 = null;
+
+        this.$http.get("users.json").then(
+          res => {
+            for (const i in res.data) {
+              if (res.data[i].email == this.reg.email) {
+                this.$store.commit("setLoader", false);
+                this.$swal.fire({
+                  title: "Bu e-poçt artıq istifadə olunub",
+                  icon: "error",
+                  showConfirmButton: false,
+                  timer: 2000
+                });
+                return false;
+              }
+            }
+            this.$http
+              .post("users.json", {
+                fullname: this.reg.fullname,
+                email: this.reg.email,
+                pass: this.reg.pass1,
+                questions: [],
+                applicants: []
+              })
+              .then(
+                res2 => {
+                  this.$store.commit("setLoader", false);
+                  this.$swal.fire({
+                    title: "Qeydiyyat uğurla başa çatdı",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                  });
+                  this.user.email = this.reg.email;
+                  this.user.pass = this.reg.pass1;
+                  this.loginPage = true;
+                  this.reg.fullname = null;
+                  this.reg.email = null;
+                  this.reg.pass1 = null;
+                  this.reg.pass2 = null;
+                },
+                res2 => {
+                  commit("setLoader", false);
+                  this.$swal.fire({
+                    title: "Xəta baş verdi",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 1000
+                  });
+                }
+              );
+          },
+          res => {
+            commit("setLoader", false);
+            this.$swal.fire({
+              title: "Xəta baş verdi",
+              icon: "error",
+              showConfirmButton: false,
+              timer: 1000
+            });
+          }
+        );
       } else {
         alert("sehv");
       }

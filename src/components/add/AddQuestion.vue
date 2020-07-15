@@ -23,6 +23,16 @@
           <label>Etiket</label>
           <input-tag v-model="questionTags"></input-tag>
         </div>
+        <div class="form-group">
+          <label>Şəkil</label>
+          <div class="input-group mb-3">
+            <input type="text" disabled="true" class="form-control" v-model="image" />
+            <div class="input-group-append">
+              <a href="#" class="input-group-text" @click.prevent="uploadFile">file</a>
+            </div>
+          </div>
+          <input type="file" ref="fileReferance" class="d-none" @change="changeInput" />
+        </div>
         <div class="form-group text-center">
           <button :disabled="$v.$invalid" class="btn btn-pr" @click.prevent="addToDb">Təsdiqlə</button>
         </div>
@@ -45,7 +55,9 @@ export default {
       defaultSelectText: "Seç",
       questionText: null,
       questionLevel: null,
-      questionTags: []
+      questionTags: [],
+      image: null,
+      imageBase64: null
     };
   },
   components: {
@@ -58,7 +70,8 @@ export default {
         var currObj = {
           level: this.questionLevel,
           text: this.questionText,
-          tags: this.questionTags
+          tags: this.questionTags,
+          img: this.imageBase64
         };
         this.$store.dispatch("addNewQuestion", currObj);
         this.questionLevel = null;
@@ -80,6 +93,20 @@ export default {
       } else {
         return false;
       }
+    },
+    uploadFile() {
+      this.$refs.fileReferance.click();
+    },
+    changeInput() {
+      this.image = this.$refs.fileReferance.value;
+      var imageFile = this.$refs.fileReferance.files[0];
+      var fileReader = new FileReader();
+      fileReader.onload = this.changeToBase64;
+      fileReader.readAsDataURL(imageFile);
+    },
+    changeToBase64(fileLoadedEvent) {
+      var srcData = fileLoadedEvent.target.result;
+      this.imageBase64 = srcData;
     }
   },
   validations: {
@@ -108,6 +135,12 @@ export default {
     height: 20px;
     fill: #004085;
   }
+}
+a.input-group-text {
+  padding: 0 20px;
+  background: #b7a900;
+  color: white;
+  text-decoration: none;
 }
 </style>
 
