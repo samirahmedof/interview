@@ -6,7 +6,28 @@
   </p>
   <div class="row" v-else>
     <div class="col-12 about">
-      <h4>{{applicant.fullname}}, {{applicant.age}}</h4>
+      <h4>{{applicant.fullname}} {{applicant.age}}</h4>
+      <a class="editApplicant" v-b-modal.editApplicantModal>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          version="1.1"
+          id="Capa_1"
+          x="0px"
+          y="0px"
+          width="528.899px"
+          height="528.899px"
+          viewBox="0 0 528.899 528.899"
+          style="enable-background:new 0 0 528.899 528.899;"
+          xml:space="preserve"
+        >
+          <g>
+            <path
+              d="M328.883,89.125l107.59,107.589l-272.34,272.34L56.604,361.465L328.883,89.125z M518.113,63.177l-47.981-47.981   c-18.543-18.543-48.653-18.543-67.259,0l-45.961,45.961l107.59,107.59l53.611-53.611   C532.495,100.753,532.495,77.559,518.113,63.177z M0.3,512.69c-1.958,8.812,5.998,16.708,14.811,14.565l119.891-29.069   L27.473,390.597L0.3,512.69z"
+            />
+          </g>
+        </svg>
+      </a>
     </div>
     <div class="col-12">
       <div class="tagsArea">
@@ -59,6 +80,7 @@
         </tbody>
       </table>
     </div>
+
     <b-modal
       id="cancelInterviewModal"
       title="Diqqət!"
@@ -88,6 +110,36 @@
         </div>
       </template>
     </b-modal>
+
+    <b-modal
+      id="editApplicantModal"
+      title="Düzəliş"
+      header-bg-variant="warning"
+      header-text-variant="light"
+    >
+      <div class="form-group">
+        <label>Ad, Soyad</label>
+        <input type="text" class="form-control" v-model="editApplicant.fullname" />
+      </div>
+      <div class="form-group">
+        <label>Yaş</label>
+        <input type="text" class="form-control" v-model="editApplicant.age" />
+      </div>
+      <div class="form-group">
+        <label>Biliklər</label>
+        <input type="text" class="form-control" v-model="editApplicant.skills" />
+      </div>
+      <div class="form-group">
+        <label>Qeyd</label>
+        <textarea cols="30" rows="3" class="form-control" v-model="editApplicant.note"></textarea>
+      </div>
+      <template v-slot:modal-footer>
+        <div class="w-100 text-right">
+          <b-button variant="pr" @click="acceptEdit">Təsdiqlə</b-button>
+          <b-button variant="secondary" @click="cancelEdit">Ləğv et</b-button>
+        </div>
+      </template>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -95,6 +147,7 @@ import Question from "./Question";
 import Tags from "./Tags";
 import { Draggable } from "draggable-vue-directive";
 import { eventBus } from "./../../main";
+
 export default {
   props: ["applicant"],
   data() {
@@ -113,13 +166,24 @@ export default {
         }
       },
       answeredQuestions: [],
-      answeredQuestionStars: []
+      answeredQuestionStars: [],
+      editApplicant: {
+        fullname: null,
+        age: null,
+        skills: null,
+        note: null
+      }
     };
   },
   directives: {
     Draggable
   },
   created() {
+    this.editApplicant.fullname = this.applicant.fullname;
+    this.editApplicant.age = this.applicant.age;
+    this.editApplicant.skills = this.applicant.skills;
+    this.editApplicant.note = this.applicant.note;
+
     this.questions = this.$store.getters.getQuestions;
     this.exampleArr = this.questions;
     var allTags = [];
@@ -225,6 +289,20 @@ export default {
         }
         this.currentResult.percent += e.starResult;
       }
+    },
+    acceptEdit() {
+      this.applicant.fullname = this.editApplicant.fullname;
+      this.applicant.age = this.editApplicant.age;
+      this.applicant.skills = this.editApplicant.skills;
+      this.applicant.note = this.editApplicant.note;
+      this.$bvModal.hide("editApplicantModal");
+    },
+    cancelEdit() {
+      this.editApplicant.fullname = this.applicant.fullname;
+      this.editApplicant.age = this.applicant.age;
+      this.editApplicant.skills = this.applicant.skills;
+      this.editApplicant.note = this.applicant.note;
+      this.$bvModal.hide("editApplicantModal");
     }
   },
   watch: {
@@ -276,14 +354,27 @@ export default {
     margin-bottom: 3px;
   }
 }
-.about h4 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #ffffff;
-  font-weight: 500;
-  background: #004085;
-  border-radius: 5px;
-  padding: 10px;
+.about {
+  position: relative;
+  h4 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #ffffff;
+    font-weight: 500;
+    background: #004085;
+    border-radius: 5px;
+    padding: 10px;
+  }
+  .editApplicant {
+    position: absolute;
+    right: 28px;
+    top: 12px;
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+  }
 }
 .currentResults {
   position: fixed;
@@ -303,16 +394,6 @@ export default {
         padding: 0 7px;
       }
     }
-  }
-}
-</style>
-<style lang="scss">
-.bg-warning {
-  background: #b7a900 !important;
-}
-.modal-body {
-  h5 {
-    font-size: 18px;
   }
 }
 </style>

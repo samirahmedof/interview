@@ -31,7 +31,8 @@
         :title="selectedRow.about.fullname"
         size="lg"
         @hide="clearInfoModal"
-        header-class="headerColor"
+        header-bg-variant="warning"
+        header-text-variant="light"
         scrollable
       >
         <div class="row">
@@ -329,10 +330,6 @@ label {
         }
       }
     }
-  }
-  .modal-header {
-    background: #b7a900;
-    color: white;
   }
 }
 </style>

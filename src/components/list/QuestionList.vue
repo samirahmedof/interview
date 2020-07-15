@@ -14,22 +14,32 @@
             </tr>
           </thead>
           <tbody>
-              <QuestionRow
-                v-for="(question,index) in questionList"
-                :key="question.id"
-                :question="question"
-                :index="index"
-                @currentEditData="getCurrentData($event)"
-                @currentRemoveData="getCurrentRemoveIndex($event)"
-              />
+            <QuestionRow
+              v-for="(question,index) in questionList"
+              :key="question.id"
+              :question="question"
+              :index="index"
+              @currentEditData="getCurrentData($event)"
+              @currentRemoveData="getCurrentRemoveIndex($event)"
+            />
           </tbody>
         </table>
       </div>
 
-      <b-modal id="editQuestionModal" title="Düzəliş">
+      <b-modal
+        id="editQuestionModal"
+        title="Düzəliş"
+        header-bg-variant="warning"
+        header-text-variant="light"
+      >
         <div class="form-group">
           <label>Sual</label>
-          <textarea cols="30" rows="3" class="form-control" v-model="selectedObj.text"></textarea>
+          <textarea
+            :class="{'invalid':checkValid($v.selectedObj.text)}"
+            class="form-control"
+            @blur="$v.selectedObj.text.$touch()"
+            v-model="selectedObj.text"
+          ></textarea>
         </div>
         <div class="form-group">
           <label for="questionLevel">Çətinlik</label>
@@ -70,7 +80,7 @@
         </div>
         <template v-slot:modal-footer>
           <div class="w-100 text-right">
-            <b-button variant="pr" @click="updateCurrentRow">Təsdiqlə</b-button>
+            <b-button variant="pr" @click="updateCurrentRow" :disabled="$v.$invalid">Təsdiqlə</b-button>
             <b-button variant="secondary" @click="$bvModal.hide('editQuestionModal')">Ləğv et</b-button>
           </div>
         </template>
@@ -95,6 +105,8 @@
 <script>
 import InputTag from "vue-input-tag";
 import QuestionRow from "./QuestionRow";
+import { required, minLength } from "vuelidate/lib/validators";
+
 export default {
   data() {
     return {
@@ -132,6 +144,24 @@ export default {
       this.$store.commit("setLoader", true);
       this.$store.dispatch("updateSelectedData", this.selectedObj);
       this.$bvModal.hide("editQuestionModal");
+    },
+    checkValid(e) {
+      if (e.$invalid && e.$dirty) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  validations: {
+    selectedObj: {
+      text: {
+        required
+      },
+      tags: {
+        required,
+        minLength: minLength(1)
+      }
     }
   },
   components: {

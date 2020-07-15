@@ -15,7 +15,13 @@
             <form @submit.prevent="goToQuestions">
               <div class="form-group">
                 <label>Ad, Soyad</label>
-                <input type="text" class="form-control" v-model="applicant.fullname" />
+                <input
+                  type="text"
+                  class="form-control"
+                  :class="{'invalid':checkValid($v.applicant.fullname)}"
+                  @blur="$v.applicant.fullname.$touch()"
+                  v-model="applicant.fullname"
+                />
               </div>
               <div class="form-group">
                 <label>Yaş</label>
@@ -30,7 +36,7 @@
                 <textarea cols="30" rows="3" class="form-control" v-model="applicant.note"></textarea>
               </div>
               <div class="form-group text-center">
-                <button type="submit" class="btn btn-pr">Təsdiqlə</button>
+                <button type="submit" class="btn btn-pr" :disabled="$v.applicant.$invalid">Təsdiqlə</button>
               </div>
             </form>
           </div>
@@ -84,6 +90,7 @@
 </template>
 <script>
 import MainQuestions from "./MainQuestions";
+import { required } from "vuelidate/lib/validators";
 export default {
   data() {
     return {
@@ -124,12 +131,25 @@ export default {
     showResult(e) {
       this.result = e;
       this.resultShow = true;
+    },
+    checkValid(e) {
+      if (e.$invalid && e.$dirty) {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   components: {
     MainQuestions
   },
-  
+  validations: {
+    applicant: {
+      fullname: {
+        required
+      }
+    }
+  },
   beforeRouteLeave(to, from, next) {
     if (!this.formComplated || this.resultShow) {
       next();
@@ -147,10 +167,8 @@ export default {
         })
         .then(result => {
           if (result.value) {
-            console.log(result);
             next(true);
           } else {
-            console.log(result);
             next(false);
           }
         });

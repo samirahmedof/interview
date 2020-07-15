@@ -10,14 +10,31 @@
           <form @submit.prevent="checkUser">
             <div class="form-group">
               <label>Email</label>
-              <input type="text" class="form-control" v-model="user.email" />
+              <input
+                type="text"
+                class="form-control"
+                :class="{'invalid':checkValid($v.user.email)}"
+                @blur="$v.user.email.$touch()"
+                v-model="user.email"
+              />
             </div>
             <div class="form-group">
               <label>Şifrə</label>
-              <input type="password" class="form-control" v-model="user.pass" />
+              <input
+                type="password"
+                class="form-control"
+                :class="{'invalid':checkValid($v.user.pass)}"
+                @blur="$v.user.pass.$touch()"
+                v-model="user.pass"
+              />
             </div>
             <div class="form-group text-center">
-              <button type="submit" class="btn btn-pr" @click.prevent="checkUser">Daxil ol</button>
+              <button
+                type="submit"
+                class="btn btn-pr"
+                @click.prevent="checkUser"
+                :disabled="$v.user.$invalid"
+              >Daxil ol</button>
             </div>
           </form>
           <hr />
@@ -29,23 +46,46 @@
           <form @submit.prevent="checkRegistration">
             <div class="form-group">
               <label>Ad, Soyad</label>
-              <input type="text" class="form-control" v-model="reg.fullname" />
+              <input
+                type="text"
+                class="form-control"
+                :class="{'invalid':checkValid($v.reg.fullname)}"
+                v-model="$v.reg.fullname.$model"
+              />
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="text" class="form-control" v-model="reg.email" />
+              <input
+                type="text"
+                class="form-control"
+                :class="{'invalid':checkValid($v.reg.email)}"
+                @blur="$v.reg.email.$touch()"
+                v-model="reg.email"
+              />
             </div>
             <div class="form-group">
               <label>Şifrə</label>
-              <input type="password" class="form-control" v-model="reg.pass1" />
+              <input
+                type="password"
+                class="form-control"
+                :class="{'invalid':checkValid($v.reg.pass1)}"
+                @blur="$v.reg.pass1.$touch()"
+                v-model="reg.pass1"
+              />
             </div>
             <div class="form-group">
               <label>Təkrar şifrə</label>
-              <input type="password" class="form-control" v-model="reg.pass2" />
+              <input
+                type="password"
+                class="form-control"
+                :class="{'invalid':checkValid($v.reg.pass2)}"
+                @blur="$v.reg.pass2.$touch()"
+                v-model="reg.pass2"
+              />
             </div>
 
             <div class="form-group text-center">
-              <button type="submit" class="btn btn-pr">Qeydiyyatdan keç</button>
+              <button type="submit" class="btn btn-pr" :disabled="$v.reg.$invalid">Qeydiyyatdan keç</button>
             </div>
           </form>
           <hr />
@@ -58,6 +98,8 @@
   </div>
 </template>
 <script>
+import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
+
 export default {
   data() {
     return {
@@ -103,11 +145,45 @@ export default {
       } else {
         alert("sehv");
       }
+    },
+    checkValid(e) {
+      if (e.$invalid && e.$dirty) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  validations: {
+    reg: {
+      fullname: {
+        required
+      },
+      email: {
+        required,
+        email
+      },
+      pass1: {
+        required,
+        minLength: minLength(3)
+      },
+      pass2: {
+        required,
+        minLength: minLength(3),
+        sameAs: sameAs("pass1")
+      }
+    },
+    user: {
+      email: {
+        required,
+        email
+      },
+      pass: {
+        required,
+        minLength: minLength(3)
+      }
     }
   }
-  // beforeRouteEnter(to, from, next) {
-
-  // }
 };
 </script>
 <style lang="scss" scoped>

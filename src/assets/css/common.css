@@ -46,8 +46,17 @@ input.form-control {
   box-shadow: none;
   border-color: #004085;
 }
+.form-control.invalid {
+  border-color: #d40000;
+}
 .modal-backdrop {
   background: #00000070;
+}
+.bg-warning {
+  background: #b7a900 !important;
+}
+.modal-body h5 {
+  font-size: 18px;
 }
 .bootstrap-select {
   width: 100% !important;

@@ -4,7 +4,12 @@
       <div class="col-md-6">
         <div class="form-group">
           <label>Sual</label>
-          <textarea class="form-control" v-model="questionText"></textarea>
+          <textarea
+            :class="{'invalid':checkValid($v.questionText)}"
+            class="form-control"
+            @blur="$v.questionText.$touch()"
+            v-model="questionText"
+          ></textarea>
         </div>
         <div class="form-group">
           <label>Səviyyə</label>
@@ -19,7 +24,7 @@
           <input-tag v-model="questionTags"></input-tag>
         </div>
         <div class="form-group text-center">
-          <a href="#" class="btn btn-pr" @click.prevent="addToDb">Təsdiqlə</a>
+          <button :disabled="$v.$invalid" class="btn btn-pr" @click.prevent="addToDb">Təsdiqlə</button>
         </div>
       </div>
     </div>
@@ -27,6 +32,8 @@
 </template>
 <script>
 import InputTag from "vue-input-tag";
+import { required, minLength } from "vuelidate/lib/validators";
+
 export default {
   data() {
     return {
@@ -66,6 +73,25 @@ export default {
     changeSelect({ data, text }) {
       this.questionLevel = data[0].value;
       this.defaultSelectText = text;
+    },
+    checkValid(e) {
+      if (e.$invalid && e.$dirty) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  validations: {
+    questionText: {
+      required
+    },
+    questionLevel: {
+      required
+    },
+    questionTags: {
+      required,
+      minLength: minLength(1)
     }
   }
 };
