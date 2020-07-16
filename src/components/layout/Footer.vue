@@ -2,8 +2,11 @@
   <footer>
     <div class="container">
       <div class="row">
-        <div class="offset-4 col-4 text-center">
-          <h1>©2020 | Samir Ahmadov</h1>
+        <div class="col-4">
+          <h5>{{$store.getters.getUserName}}</h5>
+        </div>
+        <div class="col-4 text-center">
+          <h6>©2020 | Samir Ahmadov</h6>
         </div>
         <transition
           enter-active-class="animate__animated animate__zoomIn"
@@ -70,10 +73,18 @@ footer {
   width: 100%;
   left: 0;
   padding: 15px;
-  h1 {
+  .col-4 {
+    align-self: baseline;
+  }
+  h6 {
     color: white;
     margin: 0;
     font-size: 13px;
+  }
+  h5 {
+    color: white;
+    margin: 0;
+    font-size: 18px;
   }
   .logout {
     a {

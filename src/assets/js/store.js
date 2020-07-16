@@ -11,6 +11,9 @@ export const store = new Vuex.Store({
         loaderShow: true
     },
     getters: {
+        getUserName(state) {
+            return state.user.fullname;
+        },
         getQuestions(state) {
             return state.user.questions;
         },

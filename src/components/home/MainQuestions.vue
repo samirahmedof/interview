@@ -30,14 +30,37 @@
       </a>
     </div>
     <div class="col-12">
-      <div class="tagsArea">
-        <Tags
-          v-for="(tag,index) in questionTags"
-          :key="tag.id"
-          :tag="tag"
-          :index="index"
-          @selectedTag="getSelectedTag($event)"
-        />
+      <div class="row tagsArea">
+        <div class="col-10">
+          <div class="questionTags">
+            <Tags
+              v-for="(tag,index) in questionTags"
+              :key="tag.id"
+              :tag="tag"
+              :index="index"
+              @selectedTag="getSelectedTag($event)"
+            />
+          </div>
+        </div>
+        <div class="col-2">
+          <ul>
+            <li
+              class="easy"
+              :class="{'selectedLevel':selectedLevel==1}"
+              @click="selectedLevelFilter(1)"
+            >Asan</li>
+            <li
+              class="medium"
+              :class="{'selectedLevel':selectedLevel==2}"
+              @click="selectedLevelFilter(2)"
+            >Orta</li>
+            <li
+              class="hard"
+              :class="{'selectedLevel':selectedLevel==3}"
+              @click="selectedLevelFilter(3)"
+            >Çətin</li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="col-12">
@@ -56,7 +79,7 @@
       <a class="btn btn-pr mr-2" v-b-modal.finishInterviewModal>Bitir</a>
       <a class="btn btn-sec" v-b-modal.cancelInterviewModal>Ləğv et</a>
     </div>
-    <div class="currentResults" v-draggable>
+    <div class="currentResults" v-draggable v-show="!imgModalShow">
       <table>
         <tbody>
           <tr>
@@ -64,8 +87,8 @@
             <td>{{currentResult.count}}</td>
           </tr>
           <tr>
-            <td>Müvəffəqiyyət</td>
-            <td>{{currentResult.percent}}</td>
+            <td>Nəticə</td>
+            <td>{{currentResult.percent}}%</td>
           </tr>
           <tr>
             <td>Çətin</td>
@@ -143,7 +166,13 @@
       </template>
     </b-modal>
 
-    <b-modal id="questionImgModal" hide-footer size="xl">
+    <b-modal
+      id="questionImgModal"
+      hide-footer
+      size="xl"
+      @show="imgModalShow=true"
+      @hide="imgModalShow=false"
+    >
       <img :src="imgBase64" />
     </b-modal>
   </div>
@@ -164,7 +193,7 @@ export default {
       selectedTagsIndex: [],
       currentResult: {
         count: 0,
-        percent: 0,
+        percent: "0.0",
         level: {
           hard: 0,
           medium: 0,
@@ -179,7 +208,9 @@ export default {
         skills: null,
         note: null
       },
-      imgBase64: null
+      imgBase64: null,
+      imgModalShow: false,
+      selectedLevel: 0
     };
   },
   directives: {
@@ -256,13 +287,23 @@ export default {
       this.$emit("cancelInterview");
     },
     changeResultTable(e) {
+      var selectedElementInArr;
+      for (let a = 0; a < this.questions.length; a++) {
+        if (this.questions[a].id == e.id) {
+          selectedElementInArr = this.questions[a];
+          break;
+        }
+      }
+      selectedElementInArr.answered = false;
+      selectedElementInArr.stars = 0;
       var resultIndex = this.answeredQuestions.indexOf(e.id);
       if (e.clear) {
         if (resultIndex != -1) {
+          selectedElementInArr.answered = false;
+          selectedElementInArr.stars = 0;
           this.answeredQuestions.splice(resultIndex, 1);
           this.answeredQuestionStars.splice(resultIndex, 1);
           this.currentResult.count--;
-          this.currentResult.percent -= e.starResult;
           switch (e.level) {
             case "1":
               this.currentResult.level.easy--;
@@ -292,9 +333,29 @@ export default {
               break;
           }
         } else {
-          this.answeredQuestionStars[resultIndex] += e.starResult;
+          this.answeredQuestionStars[resultIndex] = e.starResult;
         }
-        this.currentResult.percent += e.starResult;
+        selectedElementInArr.answered = true;
+        selectedElementInArr.stars = e.starResult;
+      }
+      for (let a = 0; a < this.questions.length; a++) {
+        if (this.questions[a].id == e.id) {
+          this.questions[a] = selectedElementInArr;
+          break;
+        }
+      }
+
+      var totalPercent = 0;
+      for (let t = 0; t < this.answeredQuestionStars.length; t++) {
+        totalPercent += this.answeredQuestionStars[t];
+      }
+      if (totalPercent == 0) {
+        this.currentResult.percent = 0;
+      } else {
+        this.currentResult.percent = (
+          (totalPercent * 100) /
+          (this.answeredQuestionStars.length * 5)
+        ).toFixed(1);
       }
     },
     acceptEdit() {
@@ -313,6 +374,17 @@ export default {
     },
     getCurrentImgIndex(e) {
       this.imgBase64 = this.questions[e].img;
+    },
+    selectedLevelFilter(e) {
+      if (this.selectedLevel == e) {
+        this.exampleArr = this.questions;
+        this.selectedLevel = 0;
+      } else {
+        this.selectedLevel = e;
+        this.exampleArr = this.exampleArr.filter(x => {
+          return x.level == e;
+        });
+      }
     }
   },
   watch: {
@@ -346,6 +418,14 @@ export default {
   },
   beforeDestroy() {
     eventBus.$emit("isLogoutShow", true);
+  },
+  destroyed() {
+    this.questions.filter(x => {
+      if (x.answered) {
+        x.answered = false;
+        x.stars = 0;
+      }
+    });
   }
 };
 </script>
@@ -362,6 +442,50 @@ export default {
     padding: 3px 7px;
     border-radius: 5px;
     margin-bottom: 3px;
+  }
+  ul {
+    padding: 0;
+    margin: 0;
+    li {
+      list-style-type: none;
+      text-align: center;
+      border-radius: 5px;
+      margin: 2px 0;
+      cursor: pointer;
+      border: 1px solid;
+      &.easy {
+        background: #e5f3e7;
+        border-color: #008a10;
+        color: #008a10;
+        &.selectedLevel {
+          color: white;
+          background: #008a10;
+        }
+      }
+      &.medium {
+        background: #f4f5e5;
+        border-color: #959d01;
+        color: #959d01;
+
+        &.selectedLevel {
+          color: white;
+          background: #959d01;
+        }
+      }
+      &.hard {
+        background: #f4e6e6;
+        border-color: #900505;
+        color: #900505;
+
+        &.selectedLevel {
+          color: white;
+          background: #900505;
+        }
+      }
+    }
+  }
+  .col-10 {
+    border-right: 1px solid #004085;
   }
 }
 .about {
@@ -402,6 +526,9 @@ export default {
     tr {
       td {
         padding: 0 7px;
+        &:last-of-type {
+          text-align: center;
+        }
       }
     }
   }
@@ -409,6 +536,7 @@ export default {
 </style>
 <style lang="scss">
 #questionImgModal {
+  backdrop-filter: blur(10px);
   .modal-body {
     text-align: center;
     img {

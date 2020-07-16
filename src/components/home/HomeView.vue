@@ -62,8 +62,8 @@
                   <td>{{result.count}}</td>
                 </tr>
                 <tr>
-                  <td>Müvəffəqiyyət</td>
-                  <td>{{result.percent}}</td>
+                  <td>Nəticə</td>
+                  <td>{{result.percent}}%</td>
                 </tr>
                 <tr>
                   <td>Çətin</td>

@@ -1,7 +1,7 @@
 <template>
   <li
     class="list-group-item"
-    :class="[{'easy':question.level=='1'},{'medium':question.level=='2'},{'hard':question.level=='3'},{'complatedQuestion':isComplated},{'hasImg':question.img}]"
+    :class="[{'easy':question.level=='1'},{'medium':question.level=='2'},{'hard':question.level=='3'},{'hasImg':question.img},{'complatedQuestion':isQuestionAnswered()}]"
   >
     <div class="contentArea">
       <div class="questionText">
@@ -82,7 +82,12 @@
         </div>
       </div>
     </div>
-    <div class="imgArea" v-if="question.img" v-b-modal.questionImgModal @click.prevent="goToImgModal">
+    <div
+      class="imgArea"
+      v-if="question.img"
+      v-b-modal.questionImgModal
+      @click.prevent="goToImgModal"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -112,7 +117,7 @@
 </template>
 <script>
 export default {
-  props: ["question","index"],
+  props: ["question", "index"],
   data() {
     return {
       starCount: 5,
@@ -130,12 +135,11 @@ export default {
         var sendObj = {
           id: this.question.id,
           level: this.question.level,
-          starResult: this.questionStars - this.sendedCount,
+          starResult: this.questionStars,
           clear: false
         };
 
         this.$emit("currentQuestionResult", sendObj);
-        this.sendedCount = this.questionStars;
       }
     },
     clearResult() {
@@ -145,11 +149,10 @@ export default {
         var sendObj = {
           id: this.question.id,
           level: this.question.level,
-          starResult: this.sendedCount,
+          starResult: this.questionStars,
           clear: true
         };
         this.$emit("currentQuestionResult", sendObj);
-        this.sendedCount = 0;
       }
     },
     canNotAnswer() {
@@ -158,12 +161,11 @@ export default {
       var sendObj = {
         id: this.question.id,
         level: this.question.level,
-        starResult: this.questionStars - this.sendedCount,
+        starResult: this.questionStars,
         clear: false
       };
 
       this.$emit("currentQuestionResult", sendObj);
-      this.sendedCount = this.questionStars;
     },
     levelToText() {
       switch (this.question.level) {
@@ -180,6 +182,22 @@ export default {
     },
     goToImgModal() {
       this.$emit("currentImgData", this.index);
+    },
+    isQuestionAnswered() {
+      if (this.isComplated) {
+        return true;
+      }
+      if (this.question.answered) {
+        this.isComplated = true;
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  created() {
+    if (this.question.answered) {
+      this.questionStars = this.question.stars;
     }
   }
 };
@@ -255,6 +273,12 @@ li {
   &.complatedQuestion {
     background: #94bd9e !important;
     color: white !important;
+    .imgArea {
+      background: #94bd9e !important;
+      svg {
+        fill: white !important;
+      }
+    }
   }
   .tagDiv {
     span {
