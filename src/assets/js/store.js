@@ -12,7 +12,12 @@ export const store = new Vuex.Store({
     },
     getters: {
         getUserName(state) {
-            return state.user.fullname;
+            if (state.user.fullname) {
+                return state.user.fullname;
+            }
+            else {
+                return null
+            }
         },
         getQuestions(state) {
             return state.user.questions;
@@ -58,7 +63,7 @@ export const store = new Vuex.Store({
         },
         getLogout(state) {
             state.isLogged = false;
-            state.user = null;
+            state.user = {};
         },
         addApplicantToState(state, value) {
             state.user.applicants.push(value);
@@ -241,13 +246,30 @@ export const store = new Vuex.Store({
                 });
         },
         addNewResult({ state, commit }, value) {
+            var answeredQuestionsTextAndLevel = [];
+            var answeredQuestionsId = value.ans;
+            for (let j = 0; j < answeredQuestionsId.length; j++) {
+                for (let i = 0; i < state.user.questions.length; i++) {
+                    if (state.user.questions[i].id == answeredQuestionsId[j]) {
+                        var obj = {
+                            text: state.user.questions[i].text,
+                            level: state.user.questions[i].level,
+                            star: value.stars[j]
+                        }
+                        answeredQuestionsTextAndLevel.push(obj);
+                        break;
+                    }
+                }
+
+            }
+            value.texts = answeredQuestionsTextAndLevel;
             Vue.http
                 .post(`users/` + state.user.id + `/applicants.json`, {
                     result: value.result,
                     ans: value.ans,
-                    stars: value.stars,
                     about: value.about,
-                    date: value.date
+                    date: value.date,
+                    texts: value.texts
                 })
                 .then(res => {
                     value.id = res.body.name;

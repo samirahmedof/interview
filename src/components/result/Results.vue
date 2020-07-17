@@ -190,20 +190,8 @@ export default {
       this.selectedRow.result.level.medium =
         selectedApplicant.result.level.medium;
       this.selectedRow.result.level.hard = selectedApplicant.result.level.hard;
-      var allQuestions = this.$store.getters.getQuestions;
-      if (selectedApplicant.ans) {
-        for (let i = 0; i < selectedApplicant.ans.length; i++) {
-          for (let j = 0; j < allQuestions.length; j++) {
-            if (allQuestions[j].id == selectedApplicant.ans[i]) {
-              var currQuestion = allQuestions[j];
-              currQuestion.star = selectedApplicant.stars[i];
-              this.selectedRow.questions.push(currQuestion);
-              break;
-            }
-          }
-        }
-      }
 
+      this.selectedRow.questions = selectedApplicant.texts;
       this.$bvModal.show("moreInfoModal");
     },
     clearInfoModal() {

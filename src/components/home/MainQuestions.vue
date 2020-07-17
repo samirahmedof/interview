@@ -1,5 +1,5 @@
 <template>
-  <p class="alert alert-warning" v-if="!exampleArr.length">
+  <p class="alert alert-warning" v-if="!exampleArr.length&&selectedLevel==0">
     Bazada sual yoxdur. Sual əlavə etmək üçün
     <router-link to="/add">Əlavə et</router-link>
     <span>bölməsinə daxil olun</span>
@@ -64,6 +64,10 @@
       </div>
     </div>
     <div class="col-12">
+      <p class="alert alert-warning" v-if="!exampleArr.length&&selectedLevel!=0">
+        Bazada
+        <b>{{selectedLevelText()}}</b> səviyyəli sual yoxdur
+      </p>
       <ul class="list-group">
         <Question
           v-for="(question,index) in exampleArr"
@@ -376,6 +380,7 @@ export default {
       this.imgBase64 = this.questions[e].img;
     },
     selectedLevelFilter(e) {
+      this.exampleArr = this.questions;
       if (this.selectedLevel == e) {
         this.exampleArr = this.questions;
         this.selectedLevel = 0;
@@ -384,6 +389,19 @@ export default {
         this.exampleArr = this.exampleArr.filter(x => {
           return x.level == e;
         });
+      }
+    },
+    selectedLevelText() {
+      switch (this.selectedLevel) {
+        case 1:
+          return "Asan";
+          break;
+        case 2:
+          return "Orta";
+          break;
+        case 3:
+          return "Çətin";
+          break;
       }
     }
   },

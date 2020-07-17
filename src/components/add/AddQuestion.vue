@@ -76,6 +76,8 @@ export default {
         this.$store.dispatch("addNewQuestion", currObj);
         this.questionLevel = null;
         this.questionText = null;
+        this.imageBase64 = null;
+        this.image = null;
         this.questionTags = [];
         this.defaultSelectText = "Seç";
       } else {
