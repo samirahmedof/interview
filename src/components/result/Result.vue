@@ -4,7 +4,7 @@
     <td>{{applicant.about.fullname}}</td>
     <td style="width: 100px;text-align:center">{{applicant.result.percent}}</td>
     <td style="width: 150px; text-align:center">{{applicant.date}}</td>
-    <td style="width: 50px;text-align:center">
+    <td style="width: 50px;text-align:center" @dblclick.stop>
       <a href="#" class="removeBtn" v-b-modal.removeResultModal @click.prevent="removeThisRow">
         <svg
           xmlns="http://www.w3.org/2000/svg"
